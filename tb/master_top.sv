@@ -1,7 +1,7 @@
 import uvm_pkg::*;
 `include "uvm_macros.svh"
 import mode_coverage_test_pkg::*;
-// import clk_div_corner_test_pkg::*;
+import clk_div_corner_test_pkg::*;
 import master_test_pkg::*;
 import sanity_test_pkg::*;
 import master_shared_pkg::*;
@@ -117,8 +117,8 @@ module top ();
         // run_test("master_access_test");
         // run_test("mode_coverage_test");
         // run_test("error_injection_test");
-        // run_test("clk_div_corner_test");
-        run_test("sanity_test");
+        run_test("clk_div_corner_test");
+        // run_test("sanity_test");
     end
 
 endmodule

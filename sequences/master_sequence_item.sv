@@ -35,7 +35,7 @@ class master_sequence_item extends uvm_sequence_item;
     rand logic [1:0]  width_cfg_r;
     rand logic [31:0] data_r;
     rand logic [7:0]  ss_n_r;
-    rand logic [15:0] div_r;
+    randc logic [15:0] div_r;
 
     function new(string name = "master_sequence_item");
         super.new(name);
@@ -381,7 +381,9 @@ class master_sequence_item extends uvm_sequence_item;
             2'b01 := 1, 
             2'b10 := 1 
         };
-        div_r dist {[0:1]:/10, [2:1024]:/50, [1024:$]:/30, 65535:/10 }; 
+
+        (div_r >= 1024) -> width_cfg_r == 2'b00;
+        div_r dist {[0:3]:=60, 255:=15, 1024:=15, 65535:=15};
     }
     
 

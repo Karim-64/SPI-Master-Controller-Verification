@@ -36,11 +36,10 @@ package modes_sequence_pkg;
         task body();
             master_sequence_item seq_item;
             master_sequence_item cfg_item;
-            //transfer takes pclk=2xwidthx(div+1)
-            //busy asserted 1pclk after last sample clk
             int wait_cycles;
             
             apb_write(this, 8'h10, 32'h0);
+            // apb_write(APB_INT_EN,  32'h0000_000F);  
             repeat(30) begin
                 cfg_item = master_sequence_item::type_id::create("cfg_item");
                 cfg_item.constraint_mode(0);
@@ -72,7 +71,8 @@ package modes_sequence_pkg;
                     finish_item(seq_item);
                 end
 
-                apb_write(this, 8'h14 , 32'h0000_0000);
+                apb_write(this, 8'h14 ,  32'h0000_0000);   // deassert the SS_n
+                // apb_write(APB_INT_STAT,  32'h0000_000f);   // dessaret the irq 
             end
         endtask
     endclass

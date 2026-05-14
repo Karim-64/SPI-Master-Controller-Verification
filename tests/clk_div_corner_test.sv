@@ -14,8 +14,8 @@ import div_sequence_pkg::*;
 
 `include "uvm_macros.svh"
 
-class mode_coverage_test extends uvm_test;
-	`uvm_component_utils(mode_coverage_test)
+class clk_div_corner_test extends uvm_test;
+	`uvm_component_utils(clk_div_corner_test)
     master_env env;
     apb_env abp_env_inst;
     spi_core_env spi_core_env_inst;

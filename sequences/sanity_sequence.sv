@@ -71,8 +71,9 @@ package sanity_sequence_pkg;
                 finish_item(seq_item);
             end
 
-            apb_write(APB_SS_CTRL,  32'h0000_0000);  // deassert the SS_n
-            apb_read(APB_RX_DATA);                   // reading the value from the fifo 
+            apb_write(APB_SS_CTRL,  32'h0000_000f);   // deassert the SS_n
+            apb_write(APB_INT_STAT, 32'h0000_000f);   // dessaret the irq 
+            apb_read(APB_RX_DATA);                    // reading the value from the fifo 
         endtask
     
 

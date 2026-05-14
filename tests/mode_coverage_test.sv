@@ -11,7 +11,6 @@ import apb_env_pkg::*;
 import spi_core_env_pkg::*;
 import modes_sequence_pkg::*;
 
-
 `include "uvm_macros.svh"
 
 class mode_coverage_test extends uvm_test;
