@@ -24,7 +24,6 @@ package sanity_sequence_pkg;
                     seq_item.paddr   = 8'b0;
                     seq_item.pwdata  = 32'b0;
                 finish_item(seq_item);
-                    // seq_item.miso    = 1'b0;
             end
         endtask
     endclass
