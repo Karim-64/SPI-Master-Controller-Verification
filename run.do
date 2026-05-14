@@ -193,15 +193,15 @@ vsim -voptargs=+acc work.top -classdebug -uvmcontrol=all -cover
 # ------------------------------------------------------------
 # 16. Load Waveform
 # ------------------------------------------------------------
-#if {[file exists wave.do]} {
-#    puts "Loading wave.do..."
-#    do wave.do
-#}
+if {[file exists wave.do]} {
+    puts "Loading wave.do..."
+    do wave.do
+}
 
 # ------------------------------------------------------------
 # 17. Run Simulation
 # ------------------------------------------------------------
-#run -all
+run -all
 
 puts "=========================================="
 puts " Simulation Finished"

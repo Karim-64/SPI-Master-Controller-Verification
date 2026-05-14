@@ -383,7 +383,8 @@ class master_sequence_item extends uvm_sequence_item;
         };
 
         (div_r >= 1024) -> width_cfg_r == 2'b00;
-        div_r dist {[0:3]:=60, 255:=15, 1024:=15, 65535:=15};
+        div_r dist {[0:3]:=60, 255:=15, 1024:=15};
+        // , 65535:=15
     }
     
 
