@@ -49,20 +49,19 @@ module top ();
     assign apb.pwrite               = masterif.pwrite;
     assign apb.paddr                = masterif.paddr;
     assign apb.pwdata               = masterif.pwdata;
-    //assign spi.miso                 = masterif.miso;
     
     // 2. Outputs from DUT (driven by DUT to masterif)
     assign masterif.prdata          = apb.prdata;
     assign masterif.pready          = apb.pready;
     assign masterif.pslverr         = apb.pslverr;
+    assign masterif.ss_n            = apb.ss_n;
     assign masterif.irq             = spi.irq;
-    assign masterif.ss_n            = spi.ss_n;
     assign masterif.mosi            = spi.mosi;
     assign masterif.sclk            = spi.sclk;
 
     assign apb.tx_pop               = DUT.u_dut.tx_pop;
     assign apb.rx_push_valid        = DUT.u_dut.rx_push_valid;
-    assign apb.rx_push_data        = DUT.u_dut.rx_push_data;
+    assign apb.rx_push_data         = DUT.u_dut.rx_push_data;
     assign apb.busy_in              = DUT.u_dut.busy;
     assign apb.transfer_done_pulse  = DUT.u_dut.transfer_done_pulse;
     assign apb.cfg_en               = DUT.u_dut.cfg_en;
@@ -75,7 +74,8 @@ module top ();
     assign apb.cfg_delay            = DUT.u_dut.cfg_delay;
     assign apb.tx_word              = DUT.u_dut.tx_word;
     assign apb.tx_empty             = DUT.u_dut.tx_empty;
-    //assign apb.ss_n                 = DUT.u_dut.SS_n;
+    assign apb.ss_n                 = DUT.u_dut.u_regfile.SS_n;  // correct
+    assign apb.irq                  = DUT.u_dut.u_regfile.IRQ;
 
     // ==================== Core interface =====================
 
@@ -83,7 +83,7 @@ module top ();
 
     assign spi.tx_pop               = DUT.u_dut.tx_pop;
     assign spi.rx_push_valid        = DUT.u_dut.rx_push_valid;
-    assign spi.rx_push_data        = DUT.u_dut.rx_push_data;
+    assign spi.rx_push_data         = DUT.u_dut.rx_push_data;
     assign spi.busy                 = DUT.u_dut.busy;
     assign spi.transfer_done_pulse  = DUT.u_dut.transfer_done_pulse;
     assign spi.cfg_en               = DUT.u_dut.cfg_en;
@@ -94,10 +94,11 @@ module top ();
     assign spi.cfg_width            = DUT.u_dut.cfg_width;
     assign spi.cfg_clk_div          = DUT.u_dut.cfg_clk_div;
     assign spi.cfg_delay            = DUT.u_dut.cfg_delay;
+
     // Internal assignments from DUT wrapper output signals to SPI interface
     assign spi.tx_word              = DUT.u_dut.tx_word;
     assign spi.tx_empty             = DUT.u_dut.tx_empty;
-    //assign spi.ss_n                 = DUT.u_dut.SS_n;
+    assign spi.ss_n                 = DUT.u_dut.ss_n_int;
 
     assign masterif.miso=spi.miso;
     spi_slave_bfm slave_bfm(
@@ -112,12 +113,12 @@ module top ();
     initial begin
         uvm_config_db#(virtual master_if)  ::set  (null, "uvm_test_top", "MASTER_IF",   masterif);
         uvm_config_db#(virtual apb_if)     ::set  (null, "uvm_test_top", "APB_IF",      apb);
-        uvm_config_db#(virtual spi_if)::set(null, "uvm_test_top", "spi_core_IF",   spi);
+        uvm_config_db#(virtual spi_if)     ::set(null, "uvm_test_top", "spi_core_IF",   spi);
         // run_test("master_access_test");
         // run_test("mode_coverage_test");
-        run_test("error_injection_test");
+        // run_test("error_injection_test");
         // run_test("clk_div_corner_test");
-        // run_test("sanity_test");
+        run_test("sanity_test");
     end
 
 endmodule

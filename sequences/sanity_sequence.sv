@@ -44,7 +44,7 @@ package sanity_sequence_pkg;
             seq_item.constraint_mode(0);
 
             // configuiring the bfm 
-            mode_pkg        = 2'b00;          // {CPOL, CPHA} = 2'boo
+            mode_pkg        = 2'b10;          // {CPOL, CPHA} = 2'boo
             lsb_first_pkg   = 1'b0;           // msb is drived first
             width_cfg_pkg   = 2'b0;           // data width = 8
             miso_data_pkg   = 32'h0000_00f8;  // 1111_1000 we are expecting on the prdata
@@ -56,7 +56,7 @@ package sanity_sequence_pkg;
             transfer data to slave no loopback
             spi mode zero 
             no idle*/
-            apb_write(APB_CTRL,    32'h0000_0003);              
+            apb_write(APB_CTRL,    32'h0000_000B);              
             apb_write(APB_CLK_DIV, 32'h0000_0000);  // divide /2
             apb_write(APB_INT_EN,  32'h0000_000F);  // interrupts are on 
             apb_write(APB_TX_DATA, 32'h0000_005A);  // drive this data to the bfm 

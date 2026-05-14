@@ -1,11 +1,3 @@
-// =============================================================================
-// spi_slave_bfm.sv
-// -----------------------------------------------------------------------------
-// Expanded SPI slave responder. Drives MISO with a configurable pattern.
-// Now dynamically supports all 4 SPI modes, 8/16/32-bit widths, and LSB/MSB
-// first configurations via input ports.
-// =============================================================================
-
 `ifndef SPI_SLAVE_BFM_SV
 `define SPI_SLAVE_BFM_SV
 
@@ -19,6 +11,7 @@ module spi_slave_bfm (
 
     logic sclk_q;   // SCLK previous value for edge detection
     int   bit_idx;  // which bit of miso_data is currently on the line
+    logic first_edge_done; // Flag for CPHA=1 first-bit logic
 
     wire cpol   = mode[1];
     wire cpha   = mode[0];
@@ -36,19 +29,17 @@ module spi_slave_bfm (
     wire sclk_fall = (sclk_q === 1'b1 && spi.sclk === 1'b0);
 
     // 4. Generic launch edge equation derived from SPI spec
-    // Mode 0 (0,0) -> Launch on fall
-    // Mode 1 (0,1) -> Launch on rise
-    // Mode 2 (1,0) -> Launch on rise
-    // Mode 3 (1,1) -> Launch on fall
     wire launch_edge = (cpol ^ cpha) ? sclk_rise : sclk_fall;
 
     initial begin
         spi.miso <= 1'b0;
         sclk_q  = cpol; // Assume idle state initially
         bit_idx = start_bit;
+        first_edge_done = 1'b0;
     end
 
-    always @(posedge spi.pclk) begin
+    // CHANGED TO NEGEDGE: Avoids delta-cycle races with the Master
+    always @(negedge spi.pclk) begin
         // Keep track of SCLK for edge detection in the next cycle
         sclk_q <= spi.sclk;
 
@@ -57,21 +48,29 @@ module spi_slave_bfm (
             // and pre-drive the first bit onto MISO so it's ready for the master.
             bit_idx <= start_bit;
             spi.miso <= miso_data[start_bit];
+            first_edge_done <= 1'b0; // Reset our flag
             
         end else if (launch_edge) begin
             // SHIFT STATE: Advance to the next bit on the appropriate launch edge
-            if (lsb_first) begin
-                // Count UP, wrap around at (actual_width - 1)
-                bit_idx <= (bit_idx == actual_width - 1) ? 0 : bit_idx + 1;
-                spi.miso <= miso_data[(bit_idx == actual_width - 1) ? 0 : bit_idx + 1];
+            
+            // Fix for CPHA=1: Hold the first bit on the very first launch edge
+            if (cpha == 1'b1 && !first_edge_done) begin
+                first_edge_done <= 1'b1;
+                spi.miso <= miso_data[start_bit];
             end else begin
-                // Count DOWN, wrap around at 0
-                bit_idx <= (bit_idx == 0) ? actual_width - 1 : bit_idx - 1;
-                spi.miso <= miso_data[(bit_idx == 0) ? actual_width - 1 : bit_idx - 1];
+                // Normal shift logic
+                if (lsb_first) begin
+                    // Count UP, wrap around at (actual_width - 1)
+                    bit_idx <= (bit_idx == actual_width - 1) ? 0 : bit_idx + 1;
+                    spi.miso <= miso_data[(bit_idx == actual_width - 1) ? 0 : bit_idx + 1];
+                end else begin
+                    // Count DOWN, wrap around at 0
+                    bit_idx <= (bit_idx == 0) ? actual_width - 1 : bit_idx - 1;
+                    spi.miso <= miso_data[(bit_idx == 0) ? actual_width - 1 : bit_idx - 1];
+                end
             end
         end
     end
 
 endmodule
-
-`endif // SPI_SLAVE_BFM_SV
+`endif
