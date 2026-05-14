@@ -383,7 +383,52 @@ class master_sequence_item extends uvm_sequence_item;
         };
         div_r dist {[0:1]:/10, [2:1024]:/50, [1024:$]:/30, 65535:/10 }; 
     }
-    
+
+
+    constraint loopback_ctrl_c {
+        presetn dist {1:/90 , 0:/10};
+        paddr == 8'h00; // control register
+        if({psel,penable} == 2'b00 || {psel,penable} == 2'b10)
+        {
+            pwrite dist {1:/95 , 0:/5};    // pwrite changes in idle state
+
+            pwdata[7:6] dist {2'b00:=60 , 2'b01:=20, 2'b10:=20};
+            pwdata[5] == 1'b1;      // loopback valid
+            pwdata[4] dist {1'b0:/50, 1'b1:/50};
+            pwdata[3:2] dist {2'b00:=70 , 2'b01:=10, 2'b10:=10, 2'b11:=10};
+            pwdata[1] == 1'b1;
+            pwdata[0] == 1'b1;
+        }
+        else if({psel,penable} == 2'b11)
+        {
+            pwdata == oldpwdata;
+            paddr == oldpaddr;
+            pwrite == oldpwrite;
+        }
+
+    }
+    constraint loopback_tx_data_c {
+        paddr == 8'h08; // tx data
+        pwrite == 1;
+        presetn dist {1:/90 , 0:/10};
+        if({psel,penable} == 2'b00 || {psel,penable} == 2'b10)
+        {
+            pwdata dist {
+                32'h00000000 :/ 40,
+                32'hFFFFFFFF :/ 40,
+                32'h55555555 :/ 40,
+                32'hAAAAAAAA :/ 40,
+                [32'h00000001 : 32'hFFFFFFFE] :/ 20
+            };
+        }
+        else if({psel,penable} == 2'b11)
+        {
+            pwdata == oldpwdata;
+            paddr == oldpaddr;
+            pwrite == oldpwrite;
+        }
+
+    }
 
 
     function string convert2string();

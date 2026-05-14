@@ -6,6 +6,8 @@ import master_test_pkg::*;
 import sanity_test_pkg::*;
 import master_shared_pkg::*;
 import error_injection_test_pkg::*;
+import loopback_test_pkg::*;
+import delay_transfer_test_pkg::*;
 
 `timescale 1ns/1ps
 module top ();
@@ -109,7 +111,7 @@ module top ();
     miso_data_pkg    // 32-bit pattern repeatedly returned on MISO
     );
 
-    // apb_SVA apb_sva_checker_inst (apb.DUT);
+    //bind DUT.u_dut.u_regfile apb_SVA apb_sva_checker_inst (DUT.apb);
     initial begin
         uvm_config_db#(virtual master_if)  ::set  (null, "uvm_test_top", "MASTER_IF",   masterif);
         uvm_config_db#(virtual apb_if)     ::set  (null, "uvm_test_top", "APB_IF",      apb);
@@ -118,7 +120,9 @@ module top ();
         // run_test("mode_coverage_test");
         // run_test("error_injection_test");
         // run_test("clk_div_corner_test");
-        run_test("sanity_test");
+        //run_test("sanity_test");
+        //run_test("loopback_test");
+        run_test("delay_transfer_test");
     end
 
 endmodule

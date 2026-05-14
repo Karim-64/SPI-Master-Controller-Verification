@@ -113,7 +113,6 @@ package coverage_subscriber_pkg;
             }
         endgroup
 
-
     function new(string name = "coverage_subscriber", uvm_component parent);
       super.new(name, parent);
       modes_cg = new;
@@ -133,7 +132,7 @@ package coverage_subscriber_pkg;
                 module_enabled = t.pwdata[0]; 
             end
 
-      modes_cg.sample();
+            modes_cg.sample();
             cg_apb_silent_failures.sample();
             cg_disabled_ops.sample();
     endfunction

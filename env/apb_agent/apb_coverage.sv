@@ -166,11 +166,60 @@ package apb_coverage_pkg;
 
         endgroup
 
+         // Loopback test coverage
+        covergroup loopback_cg;
+
+            width_cp: coverpoint seq_item_cov.cfg_width {
+                bins w8  = {2'b00};
+                bins w16 = {2'b01};
+                bins w32 = {2'b10};
+            }
+        
+            loopback_cp: coverpoint seq_item_cov.cfg_loopback {
+                bins enabled = {1'b1};
+            }
+        
+            transfer_cp: coverpoint seq_item_cov.transfer_done_pulse {
+                bins tr = {1'b1};
+            }
+        
+            // Ensures at least one transfer happens per width in loopback mode
+            loopback_width: cross loopback_cp, width_cp, transfer_cp {
+                bins lb_w8_tr  = binsof(loopback_cp.enabled) &&
+                                 binsof(width_cp.w8) &&
+                                 binsof(transfer_cp.tr);
+        
+                bins lb_w16_tr = binsof(loopback_cp.enabled) &&
+                                 binsof(width_cp.w16) &&
+                                 binsof(transfer_cp.tr);
+        
+                bins lb_w32_tr = binsof(loopback_cp.enabled) &&
+                                 binsof(width_cp.w32) &&
+                                 binsof(transfer_cp.tr);
+            }
+
+        endgroup
+
+        // delay transfer coverage
+        covergroup delay_cg;
+
+            delay_cp: coverpoint seq_item_cov.cfg_delay{
+            
+                bins zero  = {0};
+                bins one   = {1};
+
+                bins gt_128 = {[128:255]};
+            }
+
+        endgroup
+
         function new(string name = "apb_coverage",uvm_component parent = null);
             super.new(name , parent);
             // create covergroup
             apb_protocol_cg = new();
             apb_transaction_cg = new();
+            loopback_cg = new();
+            delay_cg=new();
         endfunction
 
         function void build_phase(uvm_phase phase);
@@ -190,6 +239,8 @@ package apb_coverage_pkg;
                 cov_fifo.get(seq_item_cov);
                 
                 apb_protocol_cg.sample();
+                loopback_cg.sample();
+                delay_cg.sample();
                 
                 if (seq_item_cov.presetn && seq_item_cov.psel && seq_item_cov.penable) begin
                     apb_transaction_cg.sample();

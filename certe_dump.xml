@@ -1,5 +1,5 @@
 <certe_dump>
-  <instance type=" mode_coverage_test "> 
+  <instance type=" delay_transfer_test "> 
      uvm_test_top 
   
      <instance type=" apb_env "> 

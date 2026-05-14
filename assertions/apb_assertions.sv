@@ -240,7 +240,6 @@ DELAY_read_correct_as: assert  property(DELAY_read_correct)
 else $error("[ASSERTION_ERROR] DELAY_read_correct test fail");
 cover property(DELAY_read_correct);
 
-
 //=====================================R10=====================================
 // correct pop from fifo
 property pop_correct;   
@@ -342,7 +341,7 @@ irq_disabled_as: assert property(irq_disabled)
 else $error("[ASSERTION_ERROR] irq_disabled test fail");
 cover property(irq_disabled);
 
-// test irq equation
+
 property irq_equation;   
     disable iff(~apbif.presetn)
     @(posedge apbif.PCLK) (apbif.irq == |(DUT.u_dut.u_regfile.int_stat & DUT.u_dut.u_regfile.int_en));
@@ -360,7 +359,7 @@ property SS_asserted_before_TX_write;
      apbif.pwrite &&
      apbif.paddr == 8'h08)
 
-    |-> (apbif.ss_n != 4'b1111);
+    |=>  (apbif.ss_n != 4'b1111);
 endproperty
 
 SS_asserted_before_TX_write_as:assert property(SS_asserted_before_TX_write)
@@ -518,5 +517,8 @@ endproperty
 ignore_TX_DATA_write_as: assert  property(ignore_TX_DATA_write)
 else $error("[ASSERTION_ERROR] ignore_TZ_DATA_write test fail");
 cover property(ignore_TX_DATA_write);
+
+
+
 
 endmodule
