@@ -383,6 +383,83 @@ class master_sequence_item extends uvm_sequence_item;
         };
         div_r dist {[0:1]:/10, [2:1024]:/50, [1024:$]:/30, 65535:/10 }; 
     }
+	
+	
+    // -----------------------------------------------------------------------
+    // width_coverage_c: for width_coverage_test
+    // Forces all three valid transfer widths with boundary data values and
+    // a fixed clk_div=0 so each sub-test completes in minimum cycles.
+    // CTRL word layout: [7:6]=width, [5]=loopback, [4]=lsb_first,
+    //                   [3:2]=mode, [1]=master, [0]=en
+    // -----------------------------------------------------------------------
+    constraint width_coverage_c {
+        presetn == 1'b1;
+        paddr   == 8'h00;       // APB_CTRL
+        pwrite  == 1'b1;
+        // cycle through all valid width encodings
+        width_cfg_r inside {2'b00, 2'b01, 2'b10};
+        // enable + master bits always set
+        pwdata[1:0] == 2'b11;
+        // width field in the CTRL write
+        pwdata[7:6] == width_cfg_r;
+        // loopback OFF, lsb_first randomised
+        pwdata[5]   == 1'b0;
+        pwdata[4]   dist {1'b0 :/ 1, 1'b1 :/ 1};
+        // mode random across all four SPI modes
+        pwdata[3:2] dist {2'b00 :/ 1, 2'b01 :/ 1, 2'b10 :/ 1, 2'b11 :/ 1};
+        // boundary TX data values
+        data_r dist {
+            32'h0000_0000 :/ 10,   // all-zeros
+            32'hFFFF_FFFF :/ 10,   // all-ones
+            32'h5555_5555 :/ 10,   // alternating 0101
+            32'hAAAA_AAAA :/ 10,   // alternating 1010
+            32'h0000_0001 :/ 10,   // LSB only
+            32'h0000_007F :/ 10,   // max positive 8-bit signed
+            32'h0000_0080 :/ 10,   // min negative 8-bit signed
+            32'h0000_00FF :/ 10,   // max unsigned 8-bit
+            32'h0000_7FFF :/ 10,   // max positive 16-bit signed
+            32'h0000_8000 :/ 10,   // min negative 16-bit signed
+            32'h0000_FFFF :/ 10,   // max unsigned 16-bit
+            32'h7FFF_FFFF :/ 10,   // max positive 32-bit signed
+            32'h8000_0000 :/ 10,   // min negative 32-bit signed
+            [32'h0000_0001:32'hFFFE_FFFE] :/ 20 // random mid-range
+        };
+        // ss_n: at least one slave selected in lower nibble
+        ss_n_r[3:0] inside {[1:15]};
+        $countones(~ss_n_r[7:4]) >= 1;
+        (ss_n_r[3:0] & ~ss_n_r[7:4]) != 4'b0000;
+        // clk_div=0 for fastest transfers in this test
+        div_r == 16'h0;
+        if ({psel,penable} == 2'b11) {
+            pwdata == oldpwdata;
+            paddr  == oldpaddr;
+            pwrite == oldpwrite;
+        }
+    }
+
+    // -----------------------------------------------------------------------
+    // width_invalid_c: forces the reserved/invalid width encoding 2'b11
+    // Used to verify the DUT handles an out-of-spec configuration gracefully.
+    // -----------------------------------------------------------------------
+    constraint width_invalid_c {
+        presetn     == 1'b1;
+        paddr       == 8'h00;   // APB_CTRL
+        pwrite      == 1'b1;
+        pwdata[7:6] == 2'b11;   // invalid width encoding
+        pwdata[1:0] == 2'b11;   // master + enable
+        pwdata[5:2] dist {
+            4'b0000 :/ 1,
+            4'b0011 :/ 1,
+            4'b1100 :/ 1,
+            4'b1111 :/ 1
+        };
+        if ({psel,penable} == 2'b11) {
+            pwdata == oldpwdata;
+            paddr  == oldpaddr;
+            pwrite == oldpwrite;
+        }
+    }
+
     
 
 
