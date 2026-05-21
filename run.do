@@ -149,7 +149,7 @@ eval vlog $VLOG_OPTS "$ENV/master_env.sv"
 puts "Compiling Sequences..."
 
 #eval vlog $VLOG_OPTS "$SEQ/apb_sequence.sv"
-#eval vlog $VLOG_OPTS "$SEQ/apb_fifo_stress_sequance.sv"
+eval vlog $VLOG_OPTS "$SEQ/master_fifo_stress_sequance.sv"
 eval vlog $VLOG_OPTS "$SEQ/master_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/sanity_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/modes_sequence.sv"
@@ -178,7 +178,7 @@ eval vlog $VLOG_OPTS "$TESTS/clk_div_corner_test.sv"
 eval vlog $VLOG_OPTS "$TESTS/loopback_test.sv"
 eval vlog $VLOG_OPTS "$TESTS/delay_transfer_test.sv"
 eval vlog $VLOG_OPTS "$TESTS/error_injection_test.sv"
-eval vlog $VLOG_OPTS "$TESTS/ral_hw_reset_test.sv"
+eval vlog $VLOG_OPTS "$TESTS/comprehensive_test.sv"
 
 # ------------------------------------------------------------
 # 14. Compile TB Top

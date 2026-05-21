@@ -70,6 +70,7 @@ package master_sequence_pkg;
                     finish_item(seq_item);
                 end
             end
+            seq_item.clk_div_c.constraint_mode(0);
         endtask
     endclass
 
@@ -96,6 +97,7 @@ package master_sequence_pkg;
                     });
                 finish_item(seq_item);
             end
+            seq_item.ctrl_c.constraint_mode(0);
             seq_item.delay_c.constraint_mode(1);
             repeat(30) begin
                 repeat(3) begin
@@ -104,6 +106,7 @@ package master_sequence_pkg;
                     finish_item(seq_item);
                 end
             end
+            seq_item.delay_c.constraint_mode(0);
         endtask
     endclass
 
@@ -251,10 +254,9 @@ package master_sequence_pkg;
             seq_item.status.constraint_mode(1);
             repeat(3) begin
                 start_item(seq_item);
-                    assert (seq_item.randomize() with {
-                        presetn == 1;
-                        pwrite == 1;
-                    });
+                    assert (seq_item.randomize());
+                    seq_item.presetn = 1;
+                    seq_item.pwrite = 1;
                 finish_item(seq_item);
             end
             seq_item.status.constraint_mode(0);
@@ -262,10 +264,9 @@ package master_sequence_pkg;
             seq_item.TX_write_c.constraint_mode(1);
             repeat(3) begin
                 start_item(seq_item);
-                    assert (seq_item.randomize() with {
-                        presetn == 1;
-                        pwrite == 0;
-                    });
+                    assert (seq_item.randomize());
+                    seq_item.presetn = 1;
+                    seq_item.pwrite = 0;
                 finish_item(seq_item);
             end
             seq_item.TX_write_c.constraint_mode(0);
@@ -273,10 +274,9 @@ package master_sequence_pkg;
             seq_item.RX_read_c.constraint_mode(1);
             repeat(3) begin
                 start_item(seq_item);
-                    assert (seq_item.randomize() with {
-                        presetn == 1;
-                        pwrite == 1;
-                    });
+                    assert (seq_item.randomize());
+                    seq_item.presetn = 1;
+                    seq_item.pwrite = 1;
                 finish_item(seq_item);
             end
             seq_item.RX_read_c.constraint_mode(0);

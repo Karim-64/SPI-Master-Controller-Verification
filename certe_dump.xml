@@ -1,5 +1,5 @@
 <certe_dump>
-  <instance type=" master_interrupts_test "> 
+  <instance type=" comprehensive_test "> 
      uvm_test_top 
   
      <instance type=" apb_env "> 

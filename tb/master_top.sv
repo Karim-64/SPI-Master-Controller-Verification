@@ -11,6 +11,7 @@ import delay_transfer_test_pkg::*;
 import width_coverage_test_pkg::*;
 import interrupts_pkg::*;
 import master_interrupts_sequence_pkg::*;
+import comprehensive_test_pkg::*;
 
 `timescale 1ns/1ps
 module top ();
@@ -126,7 +127,7 @@ module top ();
         // run_test("clk_div_corner_test");
         // run_test("sanity_test");
         // run_test("width_coverage_test");
-         run_test("master_interrupts_test");
+        run_test("comprehensive_test");
 
     end
 
