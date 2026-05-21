@@ -115,7 +115,7 @@ module spi_master (
     // -------------------------------------------------------------------------
     // SPI shift engine
     // -------------------------------------------------------------------------
-    spi_core u_core (
+    spi_core_golden u_core (
         .PCLK                 (PCLK),
         .PRESETn              (PRESETn),
 

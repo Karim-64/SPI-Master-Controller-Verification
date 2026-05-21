@@ -1,6 +1,6 @@
 `default_nettype none
 `timescale 1ns/1ps
-
+/*
 // =============================================================================
 // spi_core_rm.sv (Reference Model)
 // -----------------------------------------------------------------------------
@@ -262,3 +262,4 @@ module spi_core_rm (
     end
 endmodule
 `default_nettype wire
+*/

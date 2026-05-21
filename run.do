@@ -53,6 +53,8 @@ quietly set VLOG_OPTS "-sv -mfcu"
 puts "Compiling RTL..."
 
 eval vlog $VLOG_OPTS "$DUT_PATH/spi_core.sv"
+eval vlog $VLOG_OPTS "$DUT_PATH/spi_core_golden.sv"
+eval vlog $VLOG_OPTS "$DUT_PATH/spi_master_golden.sv"
 eval vlog $VLOG_OPTS "$DUT_PATH/apb_regfile.sv"
 eval vlog $VLOG_OPTS "$DUT_PATH/apb_regfile_golden.sv"
 eval vlog $VLOG_OPTS "$DUT_PATH/spi_master.sv"

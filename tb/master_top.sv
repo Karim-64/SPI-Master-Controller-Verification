@@ -143,6 +143,53 @@ module top ();
         .IRQ(apb.irq_exp)
     );
 
+    // ============================================================
+    // SPI Core Reference Model — drives _expected signals in spi_if
+    // ============================================================
+    spi_core_golden spi_gm (
+        .PCLK(PCLK),
+        .PRESETn(masterif.presetn),
+        .cfg_en(spi.cfg_en),
+        .cfg_mstr(spi.cfg_mstr),
+        .cfg_mode(spi.cfg_mode),
+        .cfg_lsb_first(spi.cfg_lsb_first),
+        .cfg_loopback(spi.cfg_loopback),
+        .cfg_width(spi.cfg_width),
+        .cfg_clk_div(spi.cfg_clk_div),
+        .cfg_delay(spi.cfg_delay),
+        .ss_n_drive(spi.ss_n),
+        .tx_word(spi.tx_word),
+        .tx_empty(spi.tx_empty),
+        .tx_pop(spi.tx_pop_expected),  // predicted value from golden model
+        .rx_push_valid(spi.rx_push_valid_expected),  // predicted value from golden model
+        .rx_push_data(spi.rx_push_data_expected),  // predicted value from golden model
+        .busy(spi.busy_expected),  // predicted value from golden model
+        .transfer_done_pulse(spi.transfer_done_pulse_expected),  // predicted value from golden model
+        .SCLK(spi.sclk_expected),  // predicted value from golden model
+        .MOSI(spi.mosi_expected)   // predicted value from golden model
+    );
+
+    // ============================================================
+    spi_master_golden spi_golden (
+        .PCLK(PCLK),
+        .PRESETn(masterif.presetn),
+        .PSEL(masterif.psel),
+        .PENABLE(masterif.penable),
+        .PWRITE(masterif.pwrite),
+        .PADDR(masterif.paddr),
+        .PWDATA(masterif.pwdata),
+        .MISO(masterif.miso),
+        .PRDATA(masterif.prdata_exp),
+        .PREADY(masterif.pready_exp),
+        .PSLVERR(masterif.pslverr_exp),
+        .SCLK(masterif.sclk_exp),
+        .MOSI(masterif.mosi_exp),
+        .SS_n(masterif.ss_n_exp),
+        .IRQ(masterif.irq_exp)
+
+
+    );
+    
     bind DUT.u_dut.u_regfile apb_SVA apb_sva_checker_inst (apb.DUT);
     bind DUT master_assertions master_assertions_inst (apb.DUT);
     initial begin
