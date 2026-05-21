@@ -1,5 +1,5 @@
 <certe_dump>
-  <instance type=" clk_div_corner_test "> 
+  <instance type=" sanity_test "> 
      uvm_test_top 
   
      <instance type=" apb_env "> 

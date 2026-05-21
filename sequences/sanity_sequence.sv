@@ -58,9 +58,10 @@ package sanity_sequence_pkg;
             no idle*/
             apb_write(APB_CTRL,    32'h0000_000B);              
             apb_write(APB_CLK_DIV, 32'h0000_0000);  // divide /2
-            apb_write(APB_INT_EN,  32'h0000_000F);  // interrupts are on 
-            apb_write(APB_TX_DATA, 32'h0000_005A);  // drive this data to the bfm 
+            apb_write(APB_INT_EN,  32'h0000_000F);  // interrupts are on
             apb_write(APB_SS_CTRL, 32'h0000_0001);  // assert ss[0] LOW
+            apb_write(APB_TX_DATA, 32'h0000_005A);  // drive this data to the bfm 
+            
 
             // Wait until the write happens
             // note the number of clock cycles required = width of the word * (DIV)

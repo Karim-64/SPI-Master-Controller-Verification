@@ -1,11 +1,12 @@
 import uvm_pkg::*;
 `include "uvm_macros.svh"
 import mode_coverage_test_pkg::*;
-import clk_div_corner_test_pkg::*;
+// import clk_div_corner_test_pkg::*;
 import master_test_pkg::*;
 import sanity_test_pkg::*;
 import master_shared_pkg::*;
 import error_injection_test_pkg::*;
+//import width_coverage_test_pkg::*;
 
 `timescale 1ns/1ps
 module top ();
@@ -109,16 +110,18 @@ module top ();
     miso_data_pkg    // 32-bit pattern repeatedly returned on MISO
     );
 
-    // apb_SVA apb_sva_checker_inst (apb.DUT);
+    bind DUT.u_dut.u_regfile apb_SVA apb_sva_checker_inst (apb.DUT);
+    bind DUT master_assertions master_assertions_inst (apb.DUT);
     initial begin
         uvm_config_db#(virtual master_if)  ::set  (null, "uvm_test_top", "MASTER_IF",   masterif);
         uvm_config_db#(virtual apb_if)     ::set  (null, "uvm_test_top", "APB_IF",      apb);
         uvm_config_db#(virtual spi_if)     ::set(null, "uvm_test_top", "spi_core_IF",   spi);
         // run_test("master_access_test");
-        // run_test("mode_coverage_test");
+        //run_test("mode_coverage_test");
         // run_test("error_injection_test");
-        run_test("clk_div_corner_test");
+        // run_test("clk_div_corner_test");
         // run_test("sanity_test");
+        // run_test("width_coverage_test");
     end
 
 endmodule
