@@ -1,0 +1,11 @@
+# vsim -c work.top "+UVM_TESTNAME=sanity_test" "+TESTNAME=sanity_test" -sv_seed 1 -coverage -do "coverage save -onexit build/cov_sanity_test_1.ucdb; run -all; quit" -l build/log_sanity_test_1.log 
+# Start time: 21:27:13 on May 21,2026
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Error: (vopt-13130) Failed to find design unit top.
+#         Searched libraries:
+#             work
+# Optimization failed
+# ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=1, Warnings=0.
+# Error loading design
+# End time: 21:27:14 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 1, Warnings: 0
