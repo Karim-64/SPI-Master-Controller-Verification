@@ -15,8 +15,8 @@ package div_sequence_pkg;
             master_sequence_item seq_item;
 
             // Reset
-            seq_item = master_sequence_item::type_id::create("seq_item");
             repeat(3) begin
+                seq_item = master_sequence_item::type_id::create("seq_item");
                 start_item(seq_item);
                 seq_item.presetn = 0;
                 seq_item.psel = 0;
@@ -36,19 +36,10 @@ package div_sequence_pkg;
         task body();
             master_sequence_item seq_item;
             master_sequence_item cfg_item;
-            int wait_cycles;
+            longint wait_cycles;
+            int actual_width;
             //transfer takes pclk=2xwidthx(div+1)
             //busy asserted 1pclk after last sample clk
-
-            // Reset
-            seq_item = master_sequence_item::type_id::create("seq_item");
-            repeat(3) begin
-                start_item(seq_item);
-                seq_item.presetn = 0;
-                seq_item.psel = 0;
-                seq_item.penable = 0;
-                finish_item(seq_item);
-            end
             
             repeat(10) begin
                 cfg_item = master_sequence_item::type_id::create("cfg_item");
@@ -69,11 +60,13 @@ package div_sequence_pkg;
                 apb_write(APB_SS_CTRL, {24'h0,cfg_item.ss_n_r});
                 //push data 
                 apb_write(APB_TX_DATA, cfg_item.data_r);
-                wait_cycles=((1+cfg_item.div_r)*2*cfg_item.width_cfg_r)+2;
+
+                actual_width = (cfg_item.width_cfg_r == 2'b10) ? 32 : (cfg_item.width_cfg_r == 2'b01) ? 16 : 8;
+                wait_cycles=longint'(((1+cfg_item.div_r)*2*longint'(actual_width)))+2;
                 repeat(wait_cycles) begin
                     seq_item = master_sequence_item::type_id::create("seq_item");
                     start_item(seq_item);
-                    seq_item.presetn =1'b1;
+                    seq_item.presetn = 1;
                     seq_item.psel    = 0;
                     seq_item.penable = 0;
                     finish_item(seq_item);

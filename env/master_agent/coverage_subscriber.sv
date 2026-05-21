@@ -8,8 +8,7 @@ package coverage_subscriber_pkg;
 
     master_sequence_item seq_item_cov;
 
-        // Added state variable to track if the module is currently enabled
-        bit module_enabled = 0;
+    bit module_enabled = 0;
 
     /*covergroups*/
     covergroup modes_cg;
@@ -40,7 +39,7 @@ package coverage_subscriber_pkg;
         bins no_loopback = {1'b0};
       }
 
-      cross_mode_width_lsb_loopback: cross cp_mode, cp_width, cp_lsb_first, cp_loopback;
+      cross_mode_width_lsb_loopback: cross cp_mode, cp_width, cp_lsb_first;
 
 
       cp_SS: coverpoint seq_item_cov.ss_n iff (seq_item_cov.presetn && seq_item_cov.paddr == APB_SS_CTRL && seq_item_cov.pwrite && seq_item_cov.psel && !seq_item_cov.penable) {
@@ -59,65 +58,61 @@ package coverage_subscriber_pkg;
       }
 
       cp_div: coverpoint seq_item_cov.pwdata[15:0] iff (seq_item_cov.presetn && seq_item_cov.paddr == APB_CLK_DIV && seq_item_cov.pwrite && seq_item_cov.psel && !seq_item_cov.penable) {
-        bins div_min = {0, 1};
-        bins div_small[3] = {[2:1023]};
-        bins div_large[6] = {[1024:65533]};
-        bins div_max = {65534, 65535};
-      }
+                bins div_min[]  = {[0:3]};
+                bins div_small  = {[4:1023]};
+                bins div_large  = {[1025:65534]};
+                bins div_255    = {255};
+                bins div_1024   = {1024};
+                bins div_max    = {65535};
+        }
 
-      // cross modes with div ??
 
+        cross_loopback_width: cross cp_loopback, cp_width;
     endgroup
 
-        // ---------------------------------------------------------
-        // New Covergroup: cg_apb_silent_failures
-        // ---------------------------------------------------------
-        covergroup cg_apb_silent_failures;
-            option.per_instance = 1;
-            
-            // NOTE: Replace APB_STATUS and APB_RX_DATA with your actual read-only macro names
-            cp_paddr: coverpoint seq_item_cov.paddr iff (seq_item_cov.presetn && seq_item_cov.psel && !seq_item_cov.penable) {
-                bins read_only_regs = {APB_STATUS, APB_RX_DATA}; 
-                bins valid_rw_regs  = {APB_CTRL, APB_CLK_DIV, APB_SS_CTRL, APB_TX_DATA};
-            }
-            
-            cp_pwrite: coverpoint seq_item_cov.pwrite iff (seq_item_cov.presetn && seq_item_cov.psel && !seq_item_cov.penable) {
-                bins write_op = {1'b1};
-                bins read_op  = {1'b0};
-            }
-            
-            cx_illegal_access: cross cp_paddr, cp_pwrite {
-                // Focus exclusively on writes to read-only addresses
-                bins write_to_ro = binsof(cp_pwrite.write_op) && binsof(cp_paddr.read_only_regs);
-            }
-        endgroup
+    // error_injection covergroups
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    covergroup cg_apb_silent_failures;
+        option.per_instance = 1;
+        
+        cp_paddr: coverpoint seq_item_cov.paddr iff (seq_item_cov.presetn && seq_item_cov.psel && !seq_item_cov.penable) {
+            bins read_only_regs = {APB_STATUS, APB_RX_DATA}; 
+            bins valid_rw_regs  = {APB_CTRL, APB_CLK_DIV, APB_SS_CTRL, APB_TX_DATA};
+        }
+        
+        cp_pwrite: coverpoint seq_item_cov.pwrite iff (seq_item_cov.presetn && seq_item_cov.psel && !seq_item_cov.penable) {
+            bins write_op = {1'b1};
+            bins read_op  = {1'b0};
+        }
+        
+        cx_illegal_access: cross cp_paddr, cp_pwrite {
+            bins write_to_ro = binsof(cp_pwrite.write_op) && binsof(cp_paddr.read_only_regs);
+        }
+    endgroup
 
-        // ---------------------------------------------------------
-        // New Covergroup: cg_disabled_ops
-        // ---------------------------------------------------------
-        covergroup cg_disabled_ops;
-            option.per_instance = 1;
-            
-            // NOTE: Replace APB_TX_DATA with your actual TX FIFO address macro
-            cp_tx_write: coverpoint (seq_item_cov.paddr == APB_TX_DATA && seq_item_cov.pwrite == 1'b1) iff (seq_item_cov.presetn && seq_item_cov.psel && !seq_item_cov.penable) {
-                bins attempt_push = {1'b1};
-            }
-            
-            cp_enable_state: coverpoint module_enabled iff (seq_item_cov.presetn && seq_item_cov.psel && !seq_item_cov.penable) {
-                bins disabled = {1'b0};
-                bins enabled  = {1'b1};
-            }
-            
-            cx_push_while_disabled: cross cp_tx_write, cp_enable_state {
-                bins push_while_disabled = binsof(cp_tx_write.attempt_push) && binsof(cp_enable_state.disabled);
-            }
-        endgroup
+    covergroup cg_disabled_ops;
+        option.per_instance = 1;
+        
+        cp_tx_write: coverpoint (seq_item_cov.paddr == APB_TX_DATA && seq_item_cov.pwrite == 1'b1) iff (seq_item_cov.presetn && seq_item_cov.psel && !seq_item_cov.penable) {
+            bins attempt_push = {1'b1};
+        }
+        
+        cp_enable_state: coverpoint module_enabled iff (seq_item_cov.presetn && seq_item_cov.psel && !seq_item_cov.penable) {
+            bins disabled = {1'b0};
+            bins enabled  = {1'b1};
+        }
+        
+        cx_push_while_disabled: cross cp_tx_write, cp_enable_state {
+            bins push_while_disabled = binsof(cp_tx_write.attempt_push) && binsof(cp_enable_state.disabled);
+        }
+    endgroup
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     function new(string name = "coverage_subscriber", uvm_component parent);
       super.new(name, parent);
-      modes_cg = new;
-            cg_apb_silent_failures = new;
-            cg_disabled_ops = new;
+        modes_cg = new;
+        cg_apb_silent_failures = new;
+        cg_disabled_ops = new;
     endfunction
 
     // =========================================================================
@@ -126,11 +121,9 @@ package coverage_subscriber_pkg;
     virtual function void write(master_sequence_item t);
       this.seq_item_cov = t;
 
-            // Track internal module enable state based on APB writes to the CTRL register
-            // NOTE: I am assuming bit 0 of APB_CTRL is the SPI enable bit. Adjust the index if needed.
-            if (t.presetn && t.psel && !t.penable && t.pwrite && t.paddr == APB_CTRL) begin
-                module_enabled = t.pwdata[0]; 
-            end
+    if (t.presetn && t.psel && !t.penable && t.pwrite && t.paddr == APB_CTRL) begin
+        module_enabled = t.pwdata[0]; 
+    end
 
             modes_cg.sample();
             cg_apb_silent_failures.sample();

@@ -156,6 +156,7 @@ eval vlog $VLOG_OPTS "$SEQ/modes_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/error_injection_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/delay_transfer_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/loopback_sequence.sv"
+eval vlog $VLOG_OPTS "$SEQ/div_sequence.sv"
 
 # ------------------------------------------------------------
 # 13. Compile Tests
@@ -170,7 +171,7 @@ eval vlog $VLOG_OPTS "$TESTS/width_coverage_test.sv"
 #eval vlog $VLOG_OPTS "$TESTS/fifo_stress_test.sv"
 #eval vlog $VLOG_OPTS "$TESTS/apb_fifo_stress_test.sv"
 eval vlog $VLOG_OPTS "$TESTS/interrupt_test.sv"
-#eval vlog $VLOG_OPTS "$TESTS/clk_div_corner_test.sv"
+eval vlog $VLOG_OPTS "$TESTS/clk_div_corner_test.sv"
 eval vlog $VLOG_OPTS "$TESTS/loopback_test.sv"
 eval vlog $VLOG_OPTS "$TESTS/delay_transfer_test.sv"
 eval vlog $VLOG_OPTS "$TESTS/error_injection_test.sv"
