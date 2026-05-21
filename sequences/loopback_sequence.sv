@@ -105,7 +105,8 @@ package loopback_sequence_pkg;
                 finish_item(seq_item);
             end
 
-            apb_write(APB_SS_CTRL,32'h0000_0000);    
+            apb_write(APB_SS_CTRL,32'h0000_0000);
+            apb_read(APB_RX_DATA);
     
         endtask
 
@@ -135,6 +136,33 @@ package loopback_sequence_pkg;
                 seq_item.penable = 1'b0;
                 seq_item.pwrite  = 1'b0;
             finish_item(seq_item);
+        endtask
+
+
+        task automatic apb_read(input [7:0] addr);
+                seq_item = master_sequence_item::type_id::create("seq_item");
+                seq_item.constraint_mode(0);
+
+                // SETUP phase
+                start_item(seq_item);
+                    seq_item.presetn = 1'b1;
+                    seq_item.psel    = 1'b1;
+                    seq_item.penable = 1'b0;
+                    seq_item.pwrite  = 1'b0;
+                    seq_item.paddr   = addr;
+                finish_item(seq_item);
+
+                // ACCESS phase
+                start_item(seq_item);
+                    seq_item.penable = 1'b1;
+                finish_item(seq_item);
+
+                // IDLE phase
+                start_item(seq_item);
+                    seq_item.psel    = 1'b0;
+                    seq_item.penable = 1'b0;
+                    seq_item.pwrite  = 1'b0;
+                finish_item(seq_item);
         endtask
 
     endclass
@@ -240,6 +268,7 @@ package loopback_sequence_pkg;
                          end
                     finish_item(seq_item);
                 end
+                apb_read(APB_RX_DATA);
             end
         endtask
 
@@ -271,6 +300,33 @@ package loopback_sequence_pkg;
                 seq_item.pwrite  = 1'b0;
             finish_item(seq_item);
         endtask
+
+        task automatic apb_read(input [7:0] addr);
+                seq_item = master_sequence_item::type_id::create("seq_item");
+                seq_item.constraint_mode(0);
+
+                // SETUP phase
+                start_item(seq_item);
+                    seq_item.presetn = 1'b1;
+                    seq_item.psel    = 1'b1;
+                    seq_item.penable = 1'b0;
+                    seq_item.pwrite  = 1'b0;
+                    seq_item.paddr   = addr;
+                finish_item(seq_item);
+
+                // ACCESS phase
+                start_item(seq_item);
+                    seq_item.penable = 1'b1;
+                finish_item(seq_item);
+
+                // IDLE phase
+                start_item(seq_item);
+                    seq_item.psel    = 1'b0;
+                    seq_item.penable = 1'b0;
+                    seq_item.pwrite  = 1'b0;
+                finish_item(seq_item);
+        endtask
+
 
     endclass
 endpackage

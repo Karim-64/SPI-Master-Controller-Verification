@@ -9,8 +9,7 @@ import error_injection_test_pkg::*;
 import loopback_test_pkg::*;
 import delay_transfer_test_pkg::*;
 import width_coverage_test_pkg::*;
-import interrupts_pkg::*;
-import master_interrupts_sequence_pkg::*;
+import master_fifo_stress_pkg::*;
 
 `timescale 1ns/1ps
 module top ();
@@ -120,14 +119,14 @@ module top ();
         uvm_config_db#(virtual master_if)  ::set  (null, "uvm_test_top", "MASTER_IF",   masterif);
         uvm_config_db#(virtual apb_if)     ::set  (null, "uvm_test_top", "APB_IF",      apb);
         uvm_config_db#(virtual spi_if)     ::set(null, "uvm_test_top", "spi_core_IF",   spi);
-        // run_test("master_access_test");
-        //run_test("mode_coverage_test");
-        //run_test("error_injection_test");
+         run_test("master_access_test");
+        // run_test("mode_coverage_test");
+        // run_test("error_injection_test");
         // run_test("clk_div_corner_test");
         // run_test("sanity_test");
         // run_test("width_coverage_test");
-         run_test("master_interrupts_test");
-
+        // run_test("loopback_test");
+        // run_test("delay_transfer_test");
+        // run_test("master_fifo_stress_test");
     end
-
 endmodule

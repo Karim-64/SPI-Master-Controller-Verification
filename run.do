@@ -149,7 +149,7 @@ eval vlog $VLOG_OPTS "$ENV/master_env.sv"
 puts "Compiling Sequences..."
 
 #eval vlog $VLOG_OPTS "$SEQ/apb_sequence.sv"
-#eval vlog $VLOG_OPTS "$SEQ/apb_fifo_stress_sequance.sv"
+eval vlog $VLOG_OPTS "$SEQ/master_fifo_stress_sequance.sv"
 eval vlog $VLOG_OPTS "$SEQ/master_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/sanity_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/modes_sequence.sv"
@@ -158,8 +158,6 @@ eval vlog $VLOG_OPTS "$SEQ/delay_transfer_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/loopback_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/div_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/width_coverage_sequance.sv"
-eval vlog $VLOG_OPTS "$SEQ/master_interrupts_sequance.sv"
-
 
 # ------------------------------------------------------------
 # 13. Compile Tests
@@ -171,7 +169,7 @@ eval vlog $VLOG_OPTS "$TESTS/sanity_test.sv"
 eval vlog $VLOG_OPTS "$TESTS/reg_access_test.sv"
 eval vlog $VLOG_OPTS "$TESTS/mode_coverage_test.sv"
 eval vlog $VLOG_OPTS "$TESTS/width_coverage_test.sv"
-#eval vlog $VLOG_OPTS "$TESTS/fifo_stress_test.sv"
+eval vlog $VLOG_OPTS "$TESTS/fifo_stress_test.sv"
 #eval vlog $VLOG_OPTS "$TESTS/apb_fifo_stress_test.sv"
 eval vlog $VLOG_OPTS "$TESTS/interrupt_test.sv"
 eval vlog $VLOG_OPTS "$TESTS/clk_div_corner_test.sv"

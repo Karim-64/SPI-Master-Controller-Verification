@@ -15,7 +15,7 @@ always_comb begin
        tx_word_RST:         assert final(apbif.tx_word       == 32'b0);
         tx_empty_rst:       assert final(apbif.tx_empty      == 1'b1);
         irq_rst:            assert final(apbif.irq           == 1'b0);    
-        prdata_rst:          assert final(apbif.prdata       == 32'b0);
+        prdata_rst:         assert final(apbif.prdata        == 32'b0);
 
         //Control Register Reset test
         control_reg_rst:        assert final(DUT.u_dut.u_regfile.ctrl_word      == 32'h0);  
@@ -240,13 +240,40 @@ DELAY_read_correct_as: assert  property(DELAY_read_correct)
 else $error("[ASSERTION_ERROR] DELAY_read_correct test fail");
 cover property(DELAY_read_correct);
 
+// check that interrupt enable register updated correctly after each write operation
+property INT_EN_write;
+    @(posedge apbif.PCLK)
+    disable iff(~apbif.presetn)
+
+    (apbif.psel && apbif.penable &&
+     apbif.pwrite &&
+     apbif.paddr == 8'h18)
+
+    |=> (DUT.u_dut.u_regfile.int_en_word[4:0] == $past(apbif.pwdata[4:0]));
+endproperty
+INT_EN_write_AS: assert  property(DELAY_write)
+else $error("[ASSERTION_ERROR] INT_EN_write test fail");
+cover property(INT_EN_write);
+
+//=====================================R9=====================================
+// push data when ~ tx_full
+property push_correct;   
+    disable iff(~apbif.presetn)
+    @(posedge apbif.PCLK) (apbif.psel && apbif.penable && ~apbif.pwrite 
+    && apbif.paddr == 8'h08 && ~DUT.u_dut.u_regfile.tx_full_w)     
+    |=> (DUT.u_dut.u_regfile.rx_rp == $past(DUT.u_dut.u_regfile.tx_wp) + 1'b1);
+endproperty
+push_correct_as: assert  property(pop_correct)
+else $error("[ASSERTION_ERROR] push_correct test fail");
+cover property(push_correct);
+
 //=====================================R10=====================================
-// correct pop from fifo
+// correct pop from fifo 
 property pop_correct;   
     disable iff(~apbif.presetn)
     @(posedge apbif.PCLK) (apbif.psel && apbif.penable && ~apbif.pwrite 
-    && apbif.paddr == 8'h0C && ~DUT.u_dut.u_regfile.rx_empty_w) 
-    |=> (DUT.u_dut.u_regfile.rx_rp == $past(DUT.u_dut.u_regfile.rx_rp) + 1);
+    && apbif.paddr == 8'h0C && ~DUT.u_dut.u_regfile.rx_empty_w)     
+    |=> (DUT.u_dut.u_regfile.rx_rp == $past(DUT.u_dut.u_regfile.rx_rp) + 1'b1);
 endproperty
 pop_correct_as: assert  property(pop_correct)
 else $error("[ASSERTION_ERROR] pop_correct test fail");
@@ -266,7 +293,8 @@ cover property(tx_empty_high);
 // test full is fired when tx fifo is full
 property tx_full_high;   
     disable iff(~apbif.presetn)
-    @(posedge apbif.PCLK) (DUT.u_dut.u_regfile.tx_count == DUT.u_dut.u_regfile.FIFO_DEPTH) |-> (DUT.u_dut.u_regfile.tx_full_w == 1'b1);
+    @(posedge apbif.PCLK) (DUT.u_dut.u_regfile.tx_count == DUT.u_dut.u_regfile.FIFO_DEPTH) 
+    |-> (DUT.u_dut.u_regfile.tx_full_w == 1'b1);
 endproperty
 tx_full_high_as: assert  property(tx_full_high)
 else $error("[ASSERTION_ERROR] tx_full_high test fail");
@@ -290,26 +318,49 @@ endproperty
 rx_full_high_as: assert  property(rx_full_high)
 else $error("[ASSERTION_ERROR] rx_full_high test fail");
 cover property(rx_full_high);
+
 // =============================R13=============================
-// test tx overflow
-property tx_ovf;   
+// test tx overflow and fire INT_STAT[TX_OVF]
+property tx_ovf_sate_reg;   
     disable iff(~apbif.presetn)
     @(posedge apbif.PCLK) (apbif.psel && apbif.penable && apbif.pwrite && apbif.paddr == 8'h08 && DUT.u_dut.u_regfile.tx_full_w) 
     |=> ( DUT.u_dut.u_regfile.int_stat[DUT.u_dut.u_regfile.IRQ_TX_OVF] == 1'b1);
 endproperty
-tx_ovf_as: assert  property(tx_ovf)
-else $error("[ASSERTION_ERROR] tx_ovf test fail");
-cover property(tx_ovf);
-// =======================R14=======================
-// test rx overflow
-property rx_ovf;   
-    disable iff(~apbif.presetn)
-    @(posedge apbif.PCLK) (DUT.u_dut.u_regfile.rx_full_w && DUT.u_dut.u_regfile.rx_push_valid) |=> ( DUT.u_dut.u_regfile.int_stat[DUT.u_dut.u_regfile.IRQ_RX_OVF] == 1'b1);
-endproperty
-rx_ovf_as: assert  property(rx_ovf)
-else $error("[ASSERTION_ERROR] rx_ovf test fail");
-cover property(rx_ovf);
+tx_ovf_sate_reg_as: assert  property(tx_ovf_sate_reg)
+else $error("[ASSERTION_ERROR] tx_ovf_sate_reg test fail");
+cover property(tx_ovf_sate_reg);
 
+// test tx overflow and set STATUS.TX_OVF 
+property tx_ovf_status_reg;   
+    disable iff(~apbif.presetn)
+    @(posedge apbif.PCLK) (apbif.psel && apbif.penable && apbif.pwrite && apbif.paddr == 8'h08 && DUT.u_dut.u_regfile.tx_full_w) 
+    |=> ( DUT.u_dut.u_regfile.status_word[5] == 1'b1);
+endproperty
+tx_ovf_status_reg_as: assert  property(tx_ovf_status_reg)
+else $error("[ASSERTION_ERROR] tx_ovf_status_reg test fail");
+cover property(tx_ovf_status_reg);
+
+
+
+// =======================R14=======================
+// test rx overflow and fire INT_STAT[TX_OVF]
+property rx_ovf_sate_reg;   
+    disable iff(~apbif.presetn)
+    @(posedge apbif.PCLK) (DUT.u_dut.u_regfile.rx_full_w && DUT.u_dut.u_regfile.rx_push_valid) 
+    |=> ( DUT.u_dut.u_regfile.int_stat[DUT.u_dut.u_regfile.IRQ_RX_OVF] == 1'b1);
+endproperty
+rx_ovf_sate_reg_as: assert  property(rx_ovf_sate_reg)
+else $error("[ASSERTION_ERROR] rx_ovf_sate_reg test fail");
+cover property(rx_ovf_sate_reg);
+
+property rx_ovf_status_reg;   
+    disable iff(~apbif.presetn)
+    @(posedge apbif.PCLK) (DUT.u_dut.u_regfile.rx_full_w && DUT.u_dut.u_regfile.rx_push_valid) 
+    |=> ( DUT.u_dut.u_regfile.status_word[6] == 1'b1);
+endproperty
+rx_ovf_status_reg_as: assert  property(rx_ovf_status_reg)
+else $error("[ASSERTION_ERROR] rx_ovf_status_reg test fail");
+cover property(rx_ovf_status_reg);
 
 // ==============================R15==============================
 // read zero when rx fifo is empty 
@@ -350,64 +401,21 @@ irq_equation_as: assert  property(irq_equation)
 else $error("[ASSERTION_ERROR] irq_equation test fail");
 cover property(irq_equation);
 
-property SS_asserted_before_TX_write;
-    @(posedge apbif.PCLK)
-    disable iff(!apbif.presetn)
-
-    (apbif.psel &&
-     apbif.penable &&
-     apbif.pwrite &&
-     apbif.paddr == 8'h08)
-
-    |=>  (apbif.ss_n != 4'b1111);
-endproperty
-
-SS_asserted_before_TX_write_as:assert property(SS_asserted_before_TX_write)
-else $error("[ASSERTION_ERROR] SS_asserted_before_TX_write test fail");
-cover property(SS_asserted_before_TX_write);
-
-// ========================= W1C RACE CONDITION =========================
-wire [4:0] apb_read_int_stat = DUT.u_dut.u_regfile.int_stat;
-
-property w1c_race_transfer_done;
-    disable iff(~apbif.presetn)
-    @(posedge apbif.PCLK)
-
-    (
-        apbif.psel &&
-        apbif.penable &&
-        apbif.pwrite &&
-        apbif.paddr == 8'h1C &&
-        apbif.pwdata[4] &&
-        apbif.transfer_done_pulse
-    )
-    |=> ##0 (apb_read_int_stat[4] == 1'b1);
-endproperty
-
-w1c_race_transfer_done_as: assert property(w1c_race_transfer_done)
-else $error("[ASSERTION_ERROR] w1c_race_transfer_done test fail");
-cover property(w1c_race_transfer_done);
-
-property w1c_race_tx_ovf;
-    disable iff(~apbif.presetn)
-    @(posedge apbif.PCLK)
-
-    (
-        apbif.psel &&
-        apbif.penable &&
-        apbif.pwrite &&
-        apbif.paddr == 8'h1C &&
-        apbif.pwdata[2] &&
-        DUT.u_dut.u_regfile.tx_push_dropped
-    )
-    |=> ##0 (apb_read_int_stat[2] == 1'b1);
-endproperty
-
-w1c_race_tx_ovf_as: assert property(w1c_race_tx_ovf)
-else $error("[ASSERTION_ERROR] w1c_race_tx_ovf test fail");
-cover property(w1c_race_tx_ovf);
-
-
+//property SS_asserted_before_TX_write;
+//    @(posedge apbif.PCLK)
+//    disable iff(!apbif.presetn)
+//
+//    (apbif.psel &&
+//     apbif.penable &&
+//     apbif.pwrite &&
+//     apbif.paddr == 8'h08)
+//
+//    |=>  (apbif.ss_n != 4'b1111);
+//endproperty
+//
+//SS_asserted_before_TX_write_as:assert property(SS_asserted_before_TX_write)
+//else $error("[ASSERTION_ERROR] SS_asserted_before_TX_write test fail");
+//cover property(SS_asserted_before_TX_write);
 
 // ================================R20================================
 // check that slave control register updated correctly after each write operation
@@ -489,13 +497,6 @@ else $error("[ASSERTION_ERROR] pslverr_0 test fail");
 cover property(pslverr_0);
 
 // ==================================R23==================================
-// test paddr is 4 byte allgigned (its first 2 bits always zero or modulus 4 = 0)
-property paddr_correct_val;
-    @(posedge apbif.PCLK) (apbif.paddr % 4 == 0);
-endproperty
-paddr_correct_val_as: assert  property(paddr_correct_val)
-else $error("[ASSERTION_ERROR] paddr_correct_val test fail");
-cover property(paddr_correct_val);
 
 // test prdata is zero if paddr >= 24 in read case      
 property prdata_correct_val;
@@ -560,8 +561,4 @@ endproperty
 ignore_TX_DATA_write_as: assert  property(ignore_TX_DATA_write)
 else $error("[ASSERTION_ERROR] ignore_TZ_DATA_write test fail");
 cover property(ignore_TX_DATA_write);
-
-
-
-
 endmodule

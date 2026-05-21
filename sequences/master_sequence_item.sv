@@ -205,7 +205,8 @@ class master_sequence_item extends uvm_sequence_item;
             pwrite dist {1:/90 , 0:/10};
             pwdata dist {
             32'h00000000 :/ 10,   // enable TX_EMPTY interrupt
-            32'h00000003 :/ 10,   //enable RX_FULL AND RX_EMPTY interrupt 
+            32'h00000001 :/ 10,   // enable TX_EMPTY interrupt
+            32'h00000002 :/ 10,   // enable RX_FULL interrupt
             32'h00000004 :/ 10,   // enable TX_OVF interrupt
             32'h00000008 :/ 10,   // enable RX_OVF interrupt
             32'h00000010 :/ 10    // enable TRANSFER_DONE interrupt
@@ -226,7 +227,8 @@ class master_sequence_item extends uvm_sequence_item;
         {
             pwrite dist {1:/90 , 0:/10};
             pwdata dist {
-                32'h00000003 :/ 10,   // clear RX_FULL AND RX_EMPTY interrupt 
+                32'h00000001 :/ 10,   // clear TX_EMPTY interrupt
+                32'h00000002 :/ 10,   // clear RX_FULL interrupt
                 32'h00000004 :/ 10,   // clear TX_OVF interrupt
                 32'h00000008 :/ 10,   // clear RX_OVF interrupt
                 32'h00000010 :/ 10  // clear TRANSFER_DONE interrupt
