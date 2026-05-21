@@ -115,7 +115,8 @@ module top ();
     miso_data_pkg    // 32-bit pattern repeatedly returned on MISO
     );
 
-    bind DUT.u_dut.u_regfile apb_SVA apb_sva_checker_inst (apb.DUT);
+    bind DUT.u_dut.u_regfile apb_SVA     apb_sva_checker_inst (apb.DUT);
+    bind DUT.u_dut.u_core    spi_coreSVA spi_sva_checker_inst (spi.DUT);
     // bind DUT master_assertions master_assertions_inst (apb.DUT);
     initial begin
         uvm_config_db#(virtual master_if)  ::set  (null, "uvm_test_top", "MASTER_IF",   masterif);
@@ -128,7 +129,5 @@ module top ();
         // run_test("sanity_test");
         // run_test("width_coverage_test");
         run_test("comprehensive_test");
-
     end
-
 endmodule

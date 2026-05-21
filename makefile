@@ -47,7 +47,7 @@ compile:
 	vlog -sv sequences/apb_sequence_item.sv sequences/master_sequence_item.sv sequences/spi_core_sequence_item.sv
 	vlog -sv sequences/master_sequence.sv sequences/sanity_sequence.sv \
 	         sequences/modes_sequence.sv sequences/div_sequence.sv sequences/error_injection_sequence.sv \
-	         sequences/master_fifo_stress_sequance.sv sequences/apb_fifo_stress_sequance.sv \
+	         sequences/master_fifo_stress_sequance.sv \
 	         sequences/delay_transfer_sequence.sv sequences/loopback_sequence.sv sequences/width_coverage_sequance.sv
 	
 	@echo "=> Compiling Environment..."
@@ -58,10 +58,7 @@ compile:
 	
 	@echo "=> Compiling Assertions & Tests..."
 	vlog -sv assertions/apb_assertions.sv assertions/spi_core_assertions.sv assertions/master_assertions.sv
-	vlog -sv tests/base_test.sv tests/access_reg_test.sv tests/clk_div_corner_test.sv tests/delay_transfer_test.sv \
-	         tests/error_injection_test.sv tests/fifo_stress_test.sv  tests/loopback_test.sv \
-	         tests/mode_coverage_test.sv tests/ral_hw_reset_test.sv tests/reg_access_test.sv tests/sanity_test.sv \
-	         tests/width_coverage_test.sv tests/comprehensive_test.sv 
+	vlog -sv tests/comprehensive_test.sv 
 	vlog -sv tb/master_top.sv
 
 # ==============================================================================

@@ -129,6 +129,7 @@ class comprehensive_test extends uvm_test;
     // =========================================================================
     div_rst_sequence    div_rst_seq;
     div_sequence        div_seq;
+    div_max_sequence    div_max_seq;
 
     // =========================================================================
     // SEQUENCES FROM MODE_COVERAGE_TEST
@@ -227,6 +228,7 @@ class comprehensive_test extends uvm_test;
         // ===================================================================
         div_rst_seq = div_rst_sequence::type_id::create("div_rst_seq");
         div_seq     = div_sequence::type_id::create("div_seq");
+        div_max_seq = div_max_sequence::type_id::create("div_max_seq");
 
         // ===================================================================
         // CREATE SEQUENCES FROM MODE_COVERAGE_TEST
@@ -410,6 +412,10 @@ class comprehensive_test extends uvm_test;
         `uvm_info("run_phase", "Starting div_seq", UVM_LOW)
         div_seq.start(env.agent.sqr);
         `uvm_info("run_phase", "Completed div_seq", UVM_LOW)
+
+        `uvm_info("run_phase", "Starting div_max_seq", UVM_LOW)
+        div_max_seq.start(env.agent.sqr);
+        `uvm_info("run_phase", "Completed div_max_seq", UVM_LOW)
 
         // ===================================================================
         // EXECUTE SEQUENCES FROM MODE_COVERAGE_TEST
