@@ -1,0 +1,1568 @@
+# do run.do master_interrupts_test 1
+# 
+# ------------------------------------------------------------
+# 0. Setup
+# ------------------------------------------------------------
+# quietly set DUT_PATH   "./golden_rtl"
+# quietly set HARNESS    "./harness"
+# quietly set TB         "./tb"
+# quietly set ENV        "./env"
+# quietly set SEQ        "./sequences"
+# quietly set TESTS      "./tests"
+# quietly set ASSERT     "./assertions"
+# 
+# ------------------------------------------------------------
+# User Arguments
+# Usage:
+# vsim -do "do run.do sanity_test 5"
+# ------------------------------------------------------------
+# quietly set TEST [lindex $argv 0]
+# quietly set SEED [lindex $argv 1]
+# 
+# if {$TEST eq ""} { quietly set TEST "sanity_test" }
+# if {$SEED eq ""} { quietly set SEED "1" }
+# 
+# puts "=========================================="
+# puts " Running Test : $TEST"
+# puts " Random Seed  : $SEED"
+# puts "=========================================="
+# 
+# ------------------------------------------------------------
+# 1. Create & Map Work Library
+# ------------------------------------------------------------
+# if {[file exists work]} {
+#     vdel -lib work -all
+# }
+# ** Warning: (vdel-134) Unable to remove locked optimized design "_opt".  Locker is ZBook@KARIM.
+# ** Warning: (vdel-134) Unable to remove locked optimized design "_opt1".  Locker is SIGMA@DESKTOP-KGRGKNK.
+# 
+# vlib work
+# ** Warning: (vlib-34) Library already exists at "work".
+# Errors: 0, Warnings: 1
+# vmap work work
+# QuestaSim-64 vmap 2021.1 Lib Mapping Utility 2021.01 Jan 19 2021
+# vmap work work 
+# Modifying modelsim.ini
+# 
+# ------------------------------------------------------------
+# 2. Global Compile Options
+# ------------------------------------------------------------
+# quietly set VLOG_OPTS "-sv -mfcu"
+# 
+# ------------------------------------------------------------
+# 3. Compile RTL
+# ------------------------------------------------------------
+# puts "Compiling RTL..."
+# 
+# eval vlog $VLOG_OPTS "$DUT_PATH/spi_core.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:34 on May 21,2026
+# vlog -sv -mfcu ./golden_rtl/spi_core.sv 
+# -- Compiling module spi_core
+# 
+# Top level modules:
+# 	spi_core
+# End time: 20:25:34 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$DUT_PATH/apb_regfile.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:34 on May 21,2026
+# vlog -sv -mfcu ./golden_rtl/apb_regfile.sv 
+# -- Compiling module apb_regfile_gm
+# 
+# Top level modules:
+# 	apb_regfile_gm
+# End time: 20:25:34 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$DUT_PATH/spi_master.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:34 on May 21,2026
+# vlog -sv -mfcu ./golden_rtl/spi_master.sv 
+# -- Compiling module spi_master
+# 
+# Top level modules:
+# 	spi_master
+# End time: 20:25:34 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# ------------------------------------------------------------
+# 4. Compile Interfaces / Harness
+# ------------------------------------------------------------
+# puts "Compiling Interfaces..."
+# 
+# eval vlog $VLOG_OPTS "$HARNESS/apb_if.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:34 on May 21,2026
+# vlog -sv -mfcu ./harness/apb_if.sv 
+# -- Compiling interface apb_if
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:34 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$HARNESS/master_if.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:34 on May 21,2026
+# vlog -sv -mfcu ./harness/master_if.sv 
+# -- Compiling interface master_if
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:34 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$HARNESS/spi_if.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:34 on May 21,2026
+# vlog -sv -mfcu ./harness/spi_if.sv 
+# -- Compiling interface spi_if
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:34 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$HARNESS/dut_wrapper.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:34 on May 21,2026
+# vlog -sv -mfcu ./harness/dut_wrapper.sv 
+# -- Compiling module dut_wrapper
+# 
+# Top level modules:
+# 	dut_wrapper
+# End time: 20:25:34 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# ------------------------------------------------------------
+# 5. Compile Shared Packages
+# ------------------------------------------------------------
+# puts "Compiling Shared Packages..."
+# 
+# eval vlog $VLOG_OPTS "$TB/apb_shared_pkg.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:34 on May 21,2026
+# vlog -sv -mfcu ./tb/apb_shared_pkg.sv 
+# -- Compiling package apb_shared_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:34 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$TB/spi_core_shared_pkg.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:34 on May 21,2026
+# vlog -sv -mfcu ./tb/spi_core_shared_pkg.sv 
+# -- Compiling package spi_core_shared_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:34 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$TB/master_shared_pkg.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:34 on May 21,2026
+# vlog -sv -mfcu ./tb/master_shared_pkg.sv 
+# -- Compiling package master_shared_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:34 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# ------------------------------------------------------------
+# 6. Compile Assertions
+# ------------------------------------------------------------
+# puts "Compiling Assertions..."
+# 
+# eval vlog $VLOG_OPTS "$ASSERT/apb_assertions.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:34 on May 21,2026
+# vlog -sv -mfcu ./assertions/apb_assertions.sv 
+# -- Compiling module apb_SVA
+# 
+# Top level modules:
+# 	apb_SVA
+# End time: 20:25:35 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ASSERT/spi_core_assertions.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:35 on May 21,2026
+# vlog -sv -mfcu ./assertions/spi_core_assertions.sv 
+# -- Compiling module spi_coreSVA
+# 
+# Top level modules:
+# 	spi_coreSVA
+# End time: 20:25:35 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ASSERT/master_assertions.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:35 on May 21,2026
+# vlog -sv -mfcu ./assertions/master_assertions.sv 
+# -- Compiling module master_assertions
+# 
+# Top level modules:
+# 	master_assertions
+# End time: 20:25:35 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# ------------------------------------------------------------
+# 7. Compile Sequence Items FIRST
+# ------------------------------------------------------------
+# puts "Compiling Sequence Items..."
+# 
+# eval vlog $VLOG_OPTS "$SEQ/apb_sequence_item.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:35 on May 21,2026
+# vlog -sv -mfcu ./sequences/apb_sequence_item.sv 
+# -- Compiling package apb_sequence_item_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# ** Note: (vlog-2286) ./sequences/apb_sequence_item.sv(4): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:35 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$SEQ/spi_core_sequence_item.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:35 on May 21,2026
+# vlog -sv -mfcu ./sequences/spi_core_sequence_item.sv 
+# -- Compiling package spi_core_sequence_item_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package spi_core_shared_pkg
+# ** Note: (vlog-2286) ./sequences/spi_core_sequence_item.sv(4): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:35 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$SEQ/master_sequence_item.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:35 on May 21,2026
+# vlog -sv -mfcu ./sequences/master_sequence_item.sv 
+# -- Compiling package master_sequence_item_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_shared_pkg
+# ** Note: (vlog-2286) ./sequences/master_sequence_item.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:35 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# ------------------------------------------------------------
+# 8. Compile APB Agent
+# ------------------------------------------------------------
+# puts "Compiling APB Agent..."
+# 
+# eval vlog $VLOG_OPTS "$ENV/apb_agent/apb_config.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:35 on May 21,2026
+# vlog -sv -mfcu ./env/apb_agent/apb_config.sv 
+# -- Compiling package apb_config_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# ** Note: (vlog-2286) ./env/apb_agent/apb_config.sv(3): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:36 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/apb_agent/apb_sequencer.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:36 on May 21,2026
+# vlog -sv -mfcu ./env/apb_agent/apb_sequencer.sv 
+# -- Compiling package apb_sequencer_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package apb_sequence_item_pkg
+# ** Note: (vlog-2286) ./env/apb_agent/apb_sequencer.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:36 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/apb_agent/apb_driver.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:36 on May 21,2026
+# vlog -sv -mfcu ./env/apb_agent/apb_driver.sv 
+# -- Compiling package apb_driver_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package apb_sequence_item_pkg
+# ** Note: (vlog-2286) ./env/apb_agent/apb_driver.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:36 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/apb_agent/apb_monitor.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:36 on May 21,2026
+# vlog -sv -mfcu ./env/apb_agent/apb_monitor.sv 
+# -- Compiling package apb_monitor_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package apb_sequence_item_pkg
+# ** Note: (vlog-2286) ./env/apb_agent/apb_monitor.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:36 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/apb_agent/apb_coverage.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:36 on May 21,2026
+# vlog -sv -mfcu ./env/apb_agent/apb_coverage.sv 
+# -- Compiling package apb_coverage_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package apb_sequence_item_pkg
+# ** Note: (vlog-2286) ./env/apb_agent/apb_coverage.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:37 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/apb_agent/apb_scoreboard.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:37 on May 21,2026
+# vlog -sv -mfcu ./env/apb_agent/apb_scoreboard.sv 
+# -- Compiling package apb_scoreboard_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package apb_sequence_item_pkg
+# ** Note: (vlog-2286) ./env/apb_agent/apb_scoreboard.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:37 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/apb_agent/apb_agent.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:37 on May 21,2026
+# vlog -sv -mfcu ./env/apb_agent/apb_agent.sv 
+# -- Compiling package apb_agent_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package apb_sequence_item_pkg
+# -- Importing package apb_sequencer_pkg
+# -- Importing package apb_driver_pkg
+# -- Importing package apb_config_pkg
+# -- Importing package apb_monitor_pkg
+# ** Note: (vlog-2286) ./env/apb_agent/apb_agent.sv(10): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:37 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# ------------------------------------------------------------
+# 9. Compile SPI Core Agent
+# ------------------------------------------------------------
+# puts "Compiling SPI Core Agent..."
+# 
+# eval vlog $VLOG_OPTS "$ENV/spi_core_agent/spi_core_config.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:37 on May 21,2026
+# vlog -sv -mfcu ./env/spi_core_agent/spi_core_config.sv 
+# -- Compiling package spi_core_config_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# ** Note: (vlog-2286) ./env/spi_core_agent/spi_core_config.sv(3): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:37 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/spi_core_agent/spi_core_sequencer.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:37 on May 21,2026
+# vlog -sv -mfcu ./env/spi_core_agent/spi_core_sequencer.sv 
+# -- Compiling package spi_core_sequencer_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# ** Note: (vlog-2286) ./env/spi_core_agent/spi_core_sequencer.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:37 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/spi_core_agent/spi_core_driver.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:38 on May 21,2026
+# vlog -sv -mfcu ./env/spi_core_agent/spi_core_driver.sv 
+# -- Compiling package spi_core_driver_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# ** Note: (vlog-2286) ./env/spi_core_agent/spi_core_driver.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:38 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/spi_core_agent/spi_core_monitor.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:38 on May 21,2026
+# vlog -sv -mfcu ./env/spi_core_agent/spi_core_monitor.sv 
+# -- Compiling package spi_core_monitor_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# ** Note: (vlog-2286) ./env/spi_core_agent/spi_core_monitor.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:38 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/spi_core_agent/spi_core_coverage.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:38 on May 21,2026
+# vlog -sv -mfcu ./env/spi_core_agent/spi_core_coverage.sv 
+# -- Compiling package spi_core_coverage_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# ** Note: (vlog-2286) ./env/spi_core_agent/spi_core_coverage.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:38 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/spi_core_agent/spi_core_scoreboard.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:38 on May 21,2026
+# vlog -sv -mfcu ./env/spi_core_agent/spi_core_scoreboard.sv 
+# -- Compiling package spi_core_scoreboard_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# ** Note: (vlog-2286) ./env/spi_core_agent/spi_core_scoreboard.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:38 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/spi_core_agent/spi_core_agent.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:38 on May 21,2026
+# vlog -sv -mfcu ./env/spi_core_agent/spi_core_agent.sv 
+# -- Compiling package spi_core_agent_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# -- Importing package spi_core_sequencer_pkg
+# -- Importing package spi_core_driver_pkg
+# -- Importing package spi_core_config_pkg
+# -- Importing package spi_core_monitor_pkg
+# ** Note: (vlog-2286) ./env/spi_core_agent/spi_core_agent.sv(10): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:39 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# 
+# ------------------------------------------------------------
+# 10. Compile Master Agent
+# ------------------------------------------------------------
+# puts "Compiling Master Agent..."
+# 
+# eval vlog $VLOG_OPTS "$ENV/master_agent/master_config.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:39 on May 21,2026
+# vlog -sv -mfcu ./env/master_agent/master_config.sv 
+# -- Compiling package master_config_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# ** Note: (vlog-2286) ./env/master_agent/master_config.sv(3): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:39 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/master_agent/master_sequencer.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:39 on May 21,2026
+# vlog -sv -mfcu ./env/master_agent/master_sequencer.sv 
+# -- Compiling package master_sequencer_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_shared_pkg
+# ** Note: (vlog-2286) ./env/master_agent/master_sequencer.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:39 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/master_agent/master_driver.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:39 on May 21,2026
+# vlog -sv -mfcu ./env/master_agent/master_driver.sv 
+# -- Compiling package master_driver_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_shared_pkg
+# ** Note: (vlog-2286) ./env/master_agent/master_driver.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:40 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/master_agent/master_monitor.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:40 on May 21,2026
+# vlog -sv -mfcu ./env/master_agent/master_monitor.sv 
+# -- Compiling package master_monitor_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_shared_pkg
+# ** Note: (vlog-2286) ./env/master_agent/master_monitor.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:40 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/master_agent/master_coverage.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:40 on May 21,2026
+# vlog -sv -mfcu ./env/master_agent/master_coverage.sv 
+# -- Compiling package master_coverage_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_shared_pkg
+# ** Note: (vlog-2286) ./env/master_agent/master_coverage.sv(4): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:40 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/master_agent/master_scoreboard.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:40 on May 21,2026
+# vlog -sv -mfcu ./env/master_agent/master_scoreboard.sv 
+# -- Compiling package master_scoreboard_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_shared_pkg
+# ** Note: (vlog-2286) ./env/master_agent/master_scoreboard.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:41 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/master_agent/master_agent.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:41 on May 21,2026
+# vlog -sv -mfcu ./env/master_agent/master_agent.sv 
+# -- Compiling package master_agent_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequencer_pkg
+# -- Importing package master_driver_pkg
+# -- Importing package master_config_pkg
+# -- Importing package master_monitor_pkg
+# ** Note: (vlog-2286) ./env/master_agent/master_agent.sv(10): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:41 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# ------------------------------------------------------------
+# 11. Compile Environments
+# ------------------------------------------------------------
+# puts "Compiling Environments..."
+# 
+# eval vlog $VLOG_OPTS "$ENV/master_agent/coverage_subscriber.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:41 on May 21,2026
+# vlog -sv -mfcu ./env/master_agent/coverage_subscriber.sv 
+# -- Compiling package coverage_subscriber_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# ** Note: (vlog-2286) ./env/master_agent/coverage_subscriber.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:41 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# eval vlog $VLOG_OPTS "$ENV/apb_env.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:42 on May 21,2026
+# vlog -sv -mfcu ./env/apb_env.sv 
+# -- Compiling package apb_env_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# ** Note: (vlog-2286) ./env/apb_env.sv(4): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# -- Importing package apb_sequence_item_pkg
+# -- Importing package apb_coverage_pkg
+# -- Importing package apb_agent_pkg
+# -- Importing package apb_sequencer_pkg
+# -- Importing package apb_driver_pkg
+# -- Importing package apb_config_pkg
+# -- Importing package apb_monitor_pkg
+# -- Importing package apb_scoreboard_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:42 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/spi_core_env.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:42 on May 21,2026
+# vlog -sv -mfcu ./env/spi_core_env.sv 
+# -- Compiling package spi_core_env_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# ** Note: (vlog-2286) ./env/spi_core_env.sv(4): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# -- Importing package spi_core_coverage_pkg
+# -- Importing package spi_core_agent_pkg
+# -- Importing package spi_core_sequencer_pkg
+# -- Importing package spi_core_driver_pkg
+# -- Importing package spi_core_config_pkg
+# -- Importing package spi_core_monitor_pkg
+# -- Importing package spi_core_scoreboard_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:42 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$ENV/master_env.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:42 on May 21,2026
+# vlog -sv -mfcu ./env/master_env.sv 
+# -- Compiling package master_env_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package coverage_subscriber_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# ** Note: (vlog-2286) ./env/master_env.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# -- Importing package master_coverage_pkg
+# -- Importing package master_agent_pkg
+# -- Importing package master_sequencer_pkg
+# -- Importing package master_driver_pkg
+# -- Importing package master_config_pkg
+# -- Importing package master_monitor_pkg
+# -- Importing package master_scoreboard_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:43 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# 
+# ------------------------------------------------------------
+# 12. Compile Sequences
+# ------------------------------------------------------------
+# puts "Compiling Sequences..."
+# 
+#eval vlog $VLOG_OPTS "$SEQ/apb_sequence.sv"
+#eval vlog $VLOG_OPTS "$SEQ/apb_fifo_stress_sequance.sv"
+# eval vlog $VLOG_OPTS "$SEQ/master_sequence.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:43 on May 21,2026
+# vlog -sv -mfcu ./sequences/master_sequence.sv 
+# -- Compiling package master_sequence_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_shared_pkg
+# ** Note: (vlog-2286) ./sequences/master_sequence.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:43 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$SEQ/sanity_sequence.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:43 on May 21,2026
+# vlog -sv -mfcu ./sequences/sanity_sequence.sv 
+# -- Compiling package sanity_sequence_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# ** Note: (vlog-2286) ./sequences/sanity_sequence.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:43 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$SEQ/modes_sequence.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:43 on May 21,2026
+# vlog -sv -mfcu ./sequences/modes_sequence.sv 
+# -- Compiling package modes_sequence_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_sequence_item_pkg
+# ** Note: (vlog-2286) ./sequences/modes_sequence.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:44 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$SEQ/error_injection_sequence.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:44 on May 21,2026
+# vlog -sv -mfcu ./sequences/error_injection_sequence.sv 
+# -- Compiling package error_enjection_sequence_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# ** Note: (vlog-2286) ./sequences/error_injection_sequence.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:44 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$SEQ/delay_transfer_sequence.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:44 on May 21,2026
+# vlog -sv -mfcu ./sequences/delay_transfer_sequence.sv 
+# -- Compiling package delay_transfer_sequence_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# ** Note: (vlog-2286) ./sequences/delay_transfer_sequence.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:45 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$SEQ/loopback_sequence.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:45 on May 21,2026
+# vlog -sv -mfcu ./sequences/loopback_sequence.sv 
+# -- Compiling package loopback_sequence_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# ** Note: (vlog-2286) ./sequences/loopback_sequence.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# ** Warning: ./sequences/loopback_sequence.sv(52): (vlog-2600) [RDGN] - Redundant digits in numeric literal.
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:45 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 1
+# eval vlog $VLOG_OPTS "$SEQ/div_sequence.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:45 on May 21,2026
+# vlog -sv -mfcu ./sequences/div_sequence.sv 
+# -- Compiling package div_sequence_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_sequence_item_pkg
+# ** Note: (vlog-2286) ./sequences/div_sequence.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:45 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$SEQ/width_coverage_sequance.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:45 on May 21,2026
+# vlog -sv -mfcu ./sequences/width_coverage_sequance.sv 
+# -- Compiling package width_coverage_sequence_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_sequence_item_pkg
+# ** Note: (vlog-2286) ./sequences/width_coverage_sequance.sv(5): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:46 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$SEQ/master_interrupts_sequance.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:46 on May 21,2026
+# vlog -sv -mfcu ./sequences/master_interrupts_sequance.sv 
+# -- Compiling package master_interrupts_sequence_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_shared_pkg
+# ** Note: (vlog-2286) ./sequences/master_interrupts_sequance.sv(4): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:46 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# 
+# ------------------------------------------------------------
+# 13. Compile Tests
+# ------------------------------------------------------------
+# puts "Compiling Tests..."
+# 
+# eval vlog $VLOG_OPTS "$TESTS/base_test.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:46 on May 21,2026
+# vlog -sv -mfcu ./tests/base_test.sv 
+# End time: 20:25:46 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$TESTS/sanity_test.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:46 on May 21,2026
+# vlog -sv -mfcu ./tests/sanity_test.sv 
+# -- Compiling package sanity_test_pkg
+# -- Importing package master_env_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package coverage_subscriber_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_coverage_pkg
+# -- Importing package master_agent_pkg
+# -- Importing package master_sequencer_pkg
+# -- Importing package master_driver_pkg
+# -- Importing package master_config_pkg
+# -- Importing package master_monitor_pkg
+# -- Importing package master_scoreboard_pkg
+# ** Note: (vlog-2286) ./tests/sanity_test.sv(4): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# -- Importing package master_sequence_pkg
+# -- Importing package sanity_sequence_pkg
+# -- Importing package spi_core_config_pkg
+# -- Importing package apb_config_pkg
+# -- Importing package apb_env_pkg
+# -- Importing package apb_sequence_item_pkg
+# -- Importing package apb_coverage_pkg
+# -- Importing package apb_agent_pkg
+# -- Importing package apb_sequencer_pkg
+# -- Importing package apb_driver_pkg
+# -- Importing package apb_monitor_pkg
+# -- Importing package apb_scoreboard_pkg
+# -- Importing package spi_core_env_pkg
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# -- Importing package spi_core_coverage_pkg
+# -- Importing package spi_core_agent_pkg
+# -- Importing package spi_core_sequencer_pkg
+# -- Importing package spi_core_driver_pkg
+# -- Importing package spi_core_monitor_pkg
+# -- Importing package spi_core_scoreboard_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:47 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$TESTS/reg_access_test.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:47 on May 21,2026
+# vlog -sv -mfcu ./tests/reg_access_test.sv 
+# -- Compiling package master_test_pkg
+# -- Importing package master_env_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package coverage_subscriber_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_coverage_pkg
+# -- Importing package master_agent_pkg
+# -- Importing package master_sequencer_pkg
+# -- Importing package master_driver_pkg
+# -- Importing package master_config_pkg
+# -- Importing package master_monitor_pkg
+# -- Importing package master_scoreboard_pkg
+# ** Note: (vlog-2286) ./tests/reg_access_test.sv(4): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# -- Importing package master_sequence_pkg
+# -- Importing package spi_core_config_pkg
+# -- Importing package apb_config_pkg
+# -- Importing package apb_env_pkg
+# -- Importing package apb_sequence_item_pkg
+# -- Importing package apb_coverage_pkg
+# -- Importing package apb_agent_pkg
+# -- Importing package apb_sequencer_pkg
+# -- Importing package apb_driver_pkg
+# -- Importing package apb_monitor_pkg
+# -- Importing package apb_scoreboard_pkg
+# -- Importing package spi_core_env_pkg
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# -- Importing package spi_core_coverage_pkg
+# -- Importing package spi_core_agent_pkg
+# -- Importing package spi_core_sequencer_pkg
+# -- Importing package spi_core_driver_pkg
+# -- Importing package spi_core_monitor_pkg
+# -- Importing package spi_core_scoreboard_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:47 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$TESTS/mode_coverage_test.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:47 on May 21,2026
+# vlog -sv -mfcu ./tests/mode_coverage_test.sv 
+# -- Compiling package mode_coverage_test_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_env_pkg
+# -- Importing package coverage_subscriber_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_coverage_pkg
+# -- Importing package master_agent_pkg
+# -- Importing package master_sequencer_pkg
+# -- Importing package master_driver_pkg
+# -- Importing package master_config_pkg
+# -- Importing package master_monitor_pkg
+# -- Importing package master_scoreboard_pkg
+# -- Importing package spi_core_config_pkg
+# -- Importing package apb_config_pkg
+# -- Importing package apb_env_pkg
+# -- Importing package apb_sequence_item_pkg
+# -- Importing package apb_coverage_pkg
+# -- Importing package apb_agent_pkg
+# -- Importing package apb_sequencer_pkg
+# -- Importing package apb_driver_pkg
+# -- Importing package apb_monitor_pkg
+# -- Importing package apb_scoreboard_pkg
+# -- Importing package spi_core_env_pkg
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# -- Importing package spi_core_coverage_pkg
+# -- Importing package spi_core_agent_pkg
+# -- Importing package spi_core_sequencer_pkg
+# -- Importing package spi_core_driver_pkg
+# -- Importing package spi_core_monitor_pkg
+# -- Importing package spi_core_scoreboard_pkg
+# -- Importing package modes_sequence_pkg
+# ** Note: (vlog-2286) ./tests/mode_coverage_test.sv(14): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:47 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$TESTS/width_coverage_test.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:47 on May 21,2026
+# vlog -sv -mfcu ./tests/width_coverage_test.sv 
+# -- Compiling package width_coverage_test_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_env_pkg
+# -- Importing package coverage_subscriber_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_coverage_pkg
+# -- Importing package master_agent_pkg
+# -- Importing package master_sequencer_pkg
+# -- Importing package master_driver_pkg
+# -- Importing package master_config_pkg
+# -- Importing package master_monitor_pkg
+# -- Importing package master_scoreboard_pkg
+# -- Importing package spi_core_config_pkg
+# -- Importing package apb_config_pkg
+# -- Importing package apb_env_pkg
+# -- Importing package apb_sequence_item_pkg
+# -- Importing package apb_coverage_pkg
+# -- Importing package apb_agent_pkg
+# -- Importing package apb_sequencer_pkg
+# -- Importing package apb_driver_pkg
+# -- Importing package apb_monitor_pkg
+# -- Importing package apb_scoreboard_pkg
+# -- Importing package spi_core_env_pkg
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# -- Importing package spi_core_coverage_pkg
+# -- Importing package spi_core_agent_pkg
+# -- Importing package spi_core_sequencer_pkg
+# -- Importing package spi_core_driver_pkg
+# -- Importing package spi_core_monitor_pkg
+# -- Importing package spi_core_scoreboard_pkg
+# -- Importing package width_coverage_sequence_pkg
+# ** Note: (vlog-2286) ./tests/width_coverage_test.sv(24): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:48 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+#eval vlog $VLOG_OPTS "$TESTS/fifo_stress_test.sv"
+#eval vlog $VLOG_OPTS "$TESTS/apb_fifo_stress_test.sv"
+# eval vlog $VLOG_OPTS "$TESTS/interrupt_test.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:48 on May 21,2026
+# vlog -sv -mfcu ./tests/interrupt_test.sv 
+# -- Compiling package interrupts_pkg
+# -- Importing package master_env_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package coverage_subscriber_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_coverage_pkg
+# -- Importing package master_agent_pkg
+# -- Importing package master_sequencer_pkg
+# -- Importing package master_driver_pkg
+# -- Importing package master_config_pkg
+# -- Importing package master_monitor_pkg
+# -- Importing package master_scoreboard_pkg
+# ** Note: (vlog-2286) ./tests/interrupt_test.sv(4): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# -- Importing package spi_core_config_pkg
+# -- Importing package apb_config_pkg
+# -- Importing package apb_env_pkg
+# -- Importing package apb_sequence_item_pkg
+# -- Importing package apb_coverage_pkg
+# -- Importing package apb_agent_pkg
+# -- Importing package apb_sequencer_pkg
+# -- Importing package apb_driver_pkg
+# -- Importing package apb_monitor_pkg
+# -- Importing package apb_scoreboard_pkg
+# -- Importing package spi_core_env_pkg
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# -- Importing package spi_core_coverage_pkg
+# -- Importing package spi_core_agent_pkg
+# -- Importing package spi_core_sequencer_pkg
+# -- Importing package spi_core_driver_pkg
+# -- Importing package spi_core_monitor_pkg
+# -- Importing package spi_core_scoreboard_pkg
+# -- Importing package master_interrupts_sequence_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:48 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$TESTS/clk_div_corner_test.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:48 on May 21,2026
+# vlog -sv -mfcu ./tests/clk_div_corner_test.sv 
+# -- Compiling package clk_div_corner_test_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package master_env_pkg
+# -- Importing package coverage_subscriber_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_coverage_pkg
+# -- Importing package master_agent_pkg
+# -- Importing package master_sequencer_pkg
+# -- Importing package master_driver_pkg
+# -- Importing package master_config_pkg
+# -- Importing package master_monitor_pkg
+# -- Importing package master_scoreboard_pkg
+# -- Importing package spi_core_config_pkg
+# -- Importing package apb_config_pkg
+# -- Importing package apb_env_pkg
+# -- Importing package apb_sequence_item_pkg
+# -- Importing package apb_coverage_pkg
+# -- Importing package apb_agent_pkg
+# -- Importing package apb_sequencer_pkg
+# -- Importing package apb_driver_pkg
+# -- Importing package apb_monitor_pkg
+# -- Importing package apb_scoreboard_pkg
+# -- Importing package spi_core_env_pkg
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# -- Importing package spi_core_coverage_pkg
+# -- Importing package spi_core_agent_pkg
+# -- Importing package spi_core_sequencer_pkg
+# -- Importing package spi_core_driver_pkg
+# -- Importing package spi_core_monitor_pkg
+# -- Importing package spi_core_scoreboard_pkg
+# -- Importing package div_sequence_pkg
+# ** Note: (vlog-2286) ./tests/clk_div_corner_test.sv(15): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:49 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$TESTS/loopback_test.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:49 on May 21,2026
+# vlog -sv -mfcu ./tests/loopback_test.sv 
+# -- Compiling package loopback_test_pkg
+# -- Importing package master_env_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package coverage_subscriber_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_coverage_pkg
+# -- Importing package master_agent_pkg
+# -- Importing package master_sequencer_pkg
+# -- Importing package master_driver_pkg
+# -- Importing package master_config_pkg
+# -- Importing package master_monitor_pkg
+# -- Importing package master_scoreboard_pkg
+# ** Note: (vlog-2286) ./tests/loopback_test.sv(4): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# -- Importing package loopback_sequence_pkg
+# -- Importing package spi_core_config_pkg
+# -- Importing package apb_config_pkg
+# -- Importing package apb_env_pkg
+# -- Importing package apb_sequence_item_pkg
+# -- Importing package apb_coverage_pkg
+# -- Importing package apb_agent_pkg
+# -- Importing package apb_sequencer_pkg
+# -- Importing package apb_driver_pkg
+# -- Importing package apb_monitor_pkg
+# -- Importing package apb_scoreboard_pkg
+# -- Importing package spi_core_env_pkg
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# -- Importing package spi_core_coverage_pkg
+# -- Importing package spi_core_agent_pkg
+# -- Importing package spi_core_sequencer_pkg
+# -- Importing package spi_core_driver_pkg
+# -- Importing package spi_core_monitor_pkg
+# -- Importing package spi_core_scoreboard_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:49 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$TESTS/delay_transfer_test.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:49 on May 21,2026
+# vlog -sv -mfcu ./tests/delay_transfer_test.sv 
+# -- Compiling package delay_transfer_test_pkg
+# -- Importing package master_env_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package coverage_subscriber_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_coverage_pkg
+# -- Importing package master_agent_pkg
+# -- Importing package master_sequencer_pkg
+# -- Importing package master_driver_pkg
+# -- Importing package master_config_pkg
+# -- Importing package master_monitor_pkg
+# -- Importing package master_scoreboard_pkg
+# ** Note: (vlog-2286) ./tests/delay_transfer_test.sv(4): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# -- Importing package master_sequence_pkg
+# -- Importing package delay_transfer_sequence_pkg
+# -- Importing package spi_core_config_pkg
+# -- Importing package apb_config_pkg
+# -- Importing package apb_env_pkg
+# -- Importing package apb_sequence_item_pkg
+# -- Importing package apb_coverage_pkg
+# -- Importing package apb_agent_pkg
+# -- Importing package apb_sequencer_pkg
+# -- Importing package apb_driver_pkg
+# -- Importing package apb_monitor_pkg
+# -- Importing package apb_scoreboard_pkg
+# -- Importing package spi_core_env_pkg
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# -- Importing package spi_core_coverage_pkg
+# -- Importing package spi_core_agent_pkg
+# -- Importing package spi_core_sequencer_pkg
+# -- Importing package spi_core_driver_pkg
+# -- Importing package spi_core_monitor_pkg
+# -- Importing package spi_core_scoreboard_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:49 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$TESTS/error_injection_test.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:49 on May 21,2026
+# vlog -sv -mfcu ./tests/error_injection_test.sv 
+# -- Compiling package error_injection_test_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# ** Note: (vlog-2286) ./tests/error_injection_test.sv(3): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# -- Importing package master_env_pkg
+# -- Importing package coverage_subscriber_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_coverage_pkg
+# -- Importing package master_agent_pkg
+# -- Importing package master_sequencer_pkg
+# -- Importing package master_driver_pkg
+# -- Importing package master_config_pkg
+# -- Importing package master_monitor_pkg
+# -- Importing package master_scoreboard_pkg
+# -- Importing package error_enjection_sequence_pkg
+# -- Importing package spi_core_config_pkg
+# -- Importing package apb_config_pkg
+# -- Importing package apb_env_pkg
+# -- Importing package apb_sequence_item_pkg
+# -- Importing package apb_coverage_pkg
+# -- Importing package apb_agent_pkg
+# -- Importing package apb_sequencer_pkg
+# -- Importing package apb_driver_pkg
+# -- Importing package apb_monitor_pkg
+# -- Importing package apb_scoreboard_pkg
+# -- Importing package spi_core_env_pkg
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# -- Importing package spi_core_coverage_pkg
+# -- Importing package spi_core_agent_pkg
+# -- Importing package spi_core_sequencer_pkg
+# -- Importing package spi_core_driver_pkg
+# -- Importing package spi_core_monitor_pkg
+# -- Importing package spi_core_scoreboard_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 20:25:50 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$TESTS/ral_hw_reset_test.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:50 on May 21,2026
+# vlog -sv -mfcu ./tests/ral_hw_reset_test.sv 
+# End time: 20:25:50 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# 
+# ------------------------------------------------------------
+# 14. Compile TB Top
+# ------------------------------------------------------------
+# puts "Compiling Top..."
+# 
+# eval vlog $VLOG_OPTS "$TB/spi_slave_bfm.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:50 on May 21,2026
+# vlog -sv -mfcu ./tb/spi_slave_bfm.sv 
+# -- Compiling module spi_slave_bfm
+# 
+# Top level modules:
+# 	spi_slave_bfm
+# End time: 20:25:50 on May 21,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# eval vlog $VLOG_OPTS "$TB/master_top.sv"
+# QuestaSim-64 vlog 2021.1 Compiler 2021.01 Jan 19 2021
+# Start time: 20:25:50 on May 21,2026
+# vlog -sv -mfcu ./tb/master_top.sv 
+# ** Note: (vlog-2286) ./tb/master_top.sv(2): Using implicit +incdir+C:/questasim64_2021.1/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# -- Compiling package master_top_sv_unit
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package mode_coverage_test_pkg
+# -- Importing package master_env_pkg
+# -- Importing package coverage_subscriber_pkg
+# -- Importing package master_shared_pkg
+# -- Importing package master_sequence_item_pkg
+# -- Importing package master_coverage_pkg
+# -- Importing package master_agent_pkg
+# -- Importing package master_sequencer_pkg
+# -- Importing package master_driver_pkg
+# -- Importing package master_config_pkg
+# -- Importing package master_monitor_pkg
+# -- Importing package master_scoreboard_pkg
+# -- Importing package spi_core_config_pkg
+# -- Importing package apb_config_pkg
+# -- Importing package apb_env_pkg
+# -- Importing package apb_sequence_item_pkg
+# -- Importing package apb_coverage_pkg
+# -- Importing package apb_agent_pkg
+# -- Importing package apb_sequencer_pkg
+# -- Importing package apb_driver_pkg
+# -- Importing package apb_monitor_pkg
+# -- Importing package apb_scoreboard_pkg
+# -- Importing package spi_core_env_pkg
+# -- Importing package spi_core_shared_pkg
+# -- Importing package spi_core_sequence_item_pkg
+# -- Importing package spi_core_coverage_pkg
+# -- Importing package spi_core_agent_pkg
+# -- Importing package spi_core_sequencer_pkg
+# -- Importing package spi_core_driver_pkg
+# -- Importing package spi_core_monitor_pkg
+# -- Importing package spi_core_scoreboard_pkg
+# -- Importing package modes_sequence_pkg
+# -- Importing package clk_div_corner_test_pkg
+# -- Importing package div_sequence_pkg
+# -- Importing package master_test_pkg
+# -- Importing package master_sequence_pkg
+# -- Importing package sanity_test_pkg
+# -- Importing package sanity_sequence_pkg
+# -- Importing package error_injection_test_pkg
+# -- Importing package error_enjection_sequence_pkg
+# -- Importing package loopback_test_pkg
+# -- Importing package loopback_sequence_pkg
+# -- Importing package delay_transfer_test_pkg
+# -- Importing package delay_transfer_sequence_pkg
+# -- Importing package width_coverage_test_pkg
+# -- Importing package width_coverage_sequence_pkg
+# -- Importing package interrupts_pkg
+# -- Importing package master_interrupts_sequence_pkg
+# -- Compiling module top
+# 
+# Top level modules:
+# 	top
+# End time: 20:25:51 on May 21,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# 
+# ------------------------------------------------------------
+# 15. Start Simulation
+# ------------------------------------------------------------
+# puts "Starting Simulation..."
+# 
+# vsim -voptargs=+acc work.top -classdebug -uvmcontrol=all -cover
+# vsim -voptargs="+acc" work.top -classdebug -uvmcontrol=all -coverage 
+# Start time: 20:25:51 on May 21,2026
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Note: (vopt-143) Recognized 1 FSM in module "spi_core(fast)".
+# //  Questa Sim-64
+# //  Version 2021.1 win64 Jan 19 2021
+# //
+# //  Copyright 1991-2021 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.master_if(fast)
+# Loading work.apb_if(fast)
+# Loading work.spi_if(fast)
+# Loading work.master_shared_pkg(fast)
+# Loading mtiUvm.uvm_pkg(fast)
+# Loading work.master_sequence_item_pkg(fast)
+# Loading work.master_interrupts_sequence_pkg(fast)
+# Loading work.spi_core_shared_pkg(fast)
+# Loading work.spi_core_sequence_item_pkg(fast)
+# Loading work.spi_core_scoreboard_pkg(fast)
+# Loading work.spi_core_monitor_pkg(fast)
+# Loading work.spi_core_config_pkg(fast)
+# Loading work.spi_core_driver_pkg(fast)
+# Loading work.spi_core_sequencer_pkg(fast)
+# Loading work.spi_core_agent_pkg(fast)
+# Loading work.spi_core_coverage_pkg(fast)
+# Loading work.spi_core_env_pkg(fast)
+# Loading work.apb_sequence_item_pkg(fast)
+# Loading work.apb_scoreboard_pkg(fast)
+# Loading work.apb_monitor_pkg(fast)
+# Loading work.apb_config_pkg(fast)
+# Loading work.apb_driver_pkg(fast)
+# Loading work.apb_sequencer_pkg(fast)
+# Loading work.apb_agent_pkg(fast)
+# Loading work.apb_coverage_pkg(fast)
+# Loading work.apb_env_pkg(fast)
+# Loading work.master_scoreboard_pkg(fast)
+# Loading work.master_monitor_pkg(fast)
+# Loading work.master_config_pkg(fast)
+# Loading work.master_driver_pkg(fast)
+# Loading work.master_sequencer_pkg(fast)
+# Loading work.master_agent_pkg(fast)
+# Loading work.master_coverage_pkg(fast)
+# Loading work.coverage_subscriber_pkg(fast)
+# Loading work.master_env_pkg(fast)
+# Loading work.interrupts_pkg(fast)
+# Loading work.width_coverage_sequence_pkg(fast)
+# Loading work.width_coverage_test_pkg(fast)
+# Loading work.delay_transfer_sequence_pkg(fast)
+# Loading work.master_sequence_pkg(fast)
+# Loading work.delay_transfer_test_pkg(fast)
+# Loading work.loopback_sequence_pkg(fast)
+# Loading work.loopback_test_pkg(fast)
+# Loading work.error_enjection_sequence_pkg(fast)
+# Loading work.error_injection_test_pkg(fast)
+# Loading work.sanity_sequence_pkg(fast)
+# Loading work.sanity_test_pkg(fast)
+# Loading work.master_test_pkg(fast)
+# Loading work.div_sequence_pkg(fast)
+# Loading work.clk_div_corner_test_pkg(fast)
+# Loading work.modes_sequence_pkg(fast)
+# Loading work.mode_coverage_test_pkg(fast)
+# Loading work.master_top_sv_unit(fast)
+# Loading mtiUvm.questa_uvm_pkg(fast)
+# Loading work.top(fast)
+# Loading work.master_if(fast__2)
+# Loading work.apb_if(fast__2)
+# Loading work.spi_if(fast__2)
+# Loading work.dut_wrapper(fast)
+# Loading work.spi_master(fast)
+# Loading work.apb_regfile_gm(fast)
+# Loading work.apb_SVA(fast)
+# Loading work.spi_core(fast)
+# Loading work.master_assertions(fast)
+# Loading work.spi_slave_bfm(fast)
+# Loading C:/questasim64_2021.1/uvm-1.1d\win64\uvm_dpi.dll
+# ** Warning: (vsim-8634) Code was not compiled with coverage options.
+# 
+# ------------------------------------------------------------
+# 16. Load Waveform
+# ------------------------------------------------------------
+# if {[file exists wave.do]} {
+#     puts "Loading wave.do..."
+#     do wave.do
+# }
+# onerror {resume}
+# quietly WaveActivateNextPane {} 0
+# add wave -noupdate -group master_if_group /top/masterif/pclk
+# add wave -noupdate -group master_if_group /top/masterif/sclk
+# add wave -noupdate -group master_if_group /top/masterif/presetn
+# add wave -noupdate -group master_if_group /top/masterif/psel
+# add wave -noupdate -group master_if_group /top/masterif/penable
+# add wave -noupdate -group master_if_group /top/masterif/pwrite
+# add wave -noupdate -group master_if_group /top/masterif/paddr
+# add wave -noupdate -group master_if_group /top/masterif/pwdata
+# add wave -noupdate -group master_if_group /top/masterif/miso
+# add wave -noupdate -group master_if_group /top/masterif/pready
+# add wave -noupdate -group master_if_group /top/masterif/pslverr
+# add wave -noupdate -group master_if_group /top/masterif/prdata
+# add wave -noupdate -group master_if_group /top/masterif/mosi
+# add wave -noupdate -group master_if_group /top/masterif/ss_n
+# add wave -noupdate -group master_if_group /top/masterif/irq
+# add wave -noupdate -group APB_Group /top/apb/PCLK
+# add wave -noupdate -group APB_Group /top/apb/presetn
+# add wave -noupdate -group APB_Group /top/apb/psel
+# add wave -noupdate -group APB_Group /top/apb/penable
+# add wave -noupdate -group APB_Group /top/apb/pwrite
+# add wave -noupdate -group APB_Group /top/apb/tx_pop
+# add wave -noupdate -group APB_Group /top/apb/rx_push_valid
+# add wave -noupdate -group APB_Group /top/apb/busy_in
+# add wave -noupdate -group APB_Group /top/apb/transfer_done_pulse
+# add wave -noupdate -group APB_Group /top/apb/paddr
+# add wave -noupdate -group APB_Group /top/apb/pwdata
+# add wave -noupdate -group APB_Group /top/apb/rx_push_data
+# add wave -noupdate -group APB_Group /top/apb/pready
+# add wave -noupdate -group APB_Group /top/apb/pslverr
+# add wave -noupdate -group APB_Group /top/apb/cfg_en
+# add wave -noupdate -group APB_Group /top/apb/cfg_mstr
+# add wave -noupdate -group APB_Group /top/apb/cfg_lsb_first
+# add wave -noupdate -group APB_Group /top/apb/cfg_loopback
+# add wave -noupdate -group APB_Group /top/apb/tx_empty
+# add wave -noupdate -group APB_Group /top/apb/irq
+# add wave -noupdate -group APB_Group /top/apb/cfg_mode
+# add wave -noupdate -group APB_Group /top/apb/cfg_width
+# add wave -noupdate -group APB_Group /top/apb/ss_n
+# add wave -noupdate -group APB_Group /top/apb/cfg_delay
+# add wave -noupdate -group APB_Group /top/apb/cfg_clk_div
+# add wave -noupdate -group APB_Group /top/apb/tx_word
+# add wave -noupdate -group APB_Group /top/apb/prdata
+# add wave -noupdate -group APB_Group /top/apb/pready_exp
+# add wave -noupdate -group APB_Group /top/apb/pslverr_exp
+# add wave -noupdate -group APB_Group /top/apb/cfg_en_exp
+# add wave -noupdate -group APB_Group /top/apb/cfg_mstr_exp
+# add wave -noupdate -group APB_Group /top/apb/cfg_lsb_first_exp
+# add wave -noupdate -group APB_Group /top/apb/cfg_loopback_exp
+# add wave -noupdate -group APB_Group /top/apb/tx_empty_exp
+# add wave -noupdate -group APB_Group /top/apb/irq_exp
+# add wave -noupdate -group APB_Group /top/apb/cfg_mode_exp
+# add wave -noupdate -group APB_Group /top/apb/cfg_width_exp
+# add wave -noupdate -group APB_Group /top/apb/ss_n_exp
+# add wave -noupdate -group APB_Group /top/apb/cfg_delay_exp
+# add wave -noupdate -group APB_Group /top/apb/cfg_clk_div_exp
+# add wave -noupdate -group APB_Group /top/apb/tx_word_exp
+# add wave -noupdate -group APB_Group /top/apb/prdata_exp
+# add wave -noupdate -group SPI_GROUP /top/spi/pclk
+# add wave -noupdate -group SPI_GROUP /top/spi/tx_empty
+# add wave -noupdate -group SPI_GROUP /top/spi/miso
+# add wave -noupdate -group SPI_GROUP /top/spi/presetn
+# add wave -noupdate -group SPI_GROUP /top/spi/cfg_en
+# add wave -noupdate -group SPI_GROUP /top/spi/cfg_mstr
+# add wave -noupdate -group SPI_GROUP /top/spi/cfg_lsb_first
+# add wave -noupdate -group SPI_GROUP /top/spi/cfg_loopback
+# add wave -noupdate -group SPI_GROUP /top/spi/cfg_mode
+# add wave -noupdate -group SPI_GROUP /top/spi/cfg_width
+# add wave -noupdate -group SPI_GROUP /top/spi/ss_n
+# add wave -noupdate -group SPI_GROUP /top/spi/cfg_delay
+# add wave -noupdate -group SPI_GROUP /top/spi/cfg_clk_div
+# add wave -noupdate -group SPI_GROUP /top/spi/tx_word
+# add wave -noupdate -group SPI_GROUP /top/spi/irq
+# add wave -noupdate -group SPI_GROUP /top/spi/tx_pop
+# add wave -noupdate -group SPI_GROUP /top/spi/rx_push_valid
+# add wave -noupdate -group SPI_GROUP /top/spi/busy
+# add wave -noupdate -group SPI_GROUP /top/spi/transfer_done_pulse
+# add wave -noupdate -group SPI_GROUP /top/spi/sclk
+# add wave -noupdate -group SPI_GROUP /top/spi/mosi
+# add wave -noupdate -group SPI_GROUP /top/spi/rx_push_data
+# add wave -noupdate -group SPI_GROUP /top/spi/tx_pop_expected
+# add wave -noupdate -group SPI_GROUP /top/spi/rx_push_valid_expected
+# add wave -noupdate -group SPI_GROUP /top/spi/busy_expected
+# add wave -noupdate -group SPI_GROUP /top/spi/transfer_done_pulse_expected
+# add wave -noupdate -group SPI_GROUP /top/spi/sclk_expected
+# add wave -noupdate -group SPI_GROUP /top/spi/mosi_expected
+# add wave -noupdate -group SPI_GROUP /top/spi/rx_push_data_expected
+# TreeUpdate [SetDefaultTree]
+# WaveRestoreCursors {{Cursor 1} {34070797 ps} 0}
+# quietly wave cursor active 1
+# wave activecursor not supported in batch mode
+# configure wave -namecolwidth 371
+# configure wave not supported in batch mode
+# configure wave -valuecolwidth 100
+# configure wave not supported in batch mode
+# configure wave -justifyvalue left
+# configure wave not supported in batch mode
+# configure wave -signalnamewidth 1
+# configure wave not supported in batch mode
+# configure wave -snapdistance 10
+# configure wave not supported in batch mode
+# configure wave -datasetprefix 0
+# configure wave not supported in batch mode
+# configure wave -rowmargin 4
+# configure wave not supported in batch mode
+# configure wave -childrowmargin 2
+# configure wave not supported in batch mode
+# configure wave -gridoffset 0
+# configure wave not supported in batch mode
+# configure wave -gridperiod 1
+# configure wave not supported in batch mode
+# configure wave -griddelta 40
+# configure wave not supported in batch mode
+# configure wave -timeline 0
+# configure wave not supported in batch mode
+# configure wave -timelineunits ps
+# configure wave not supported in batch mode
+# update
+# WaveRestoreZoom {33938906 ps} {34417952 ps}
+# 
+# ------------------------------------------------------------
+# 17. Run Simulation
+# ------------------------------------------------------------
+# run -all
+# ----------------------------------------------------------------
+# UVM-1.1d
+# (C) 2007-2013 Mentor Graphics Corporation
+# (C) 2007-2013 Cadence Design Systems, Inc.
+# (C) 2006-2013 Synopsys, Inc.
+# (C) 2011-2013 Cypress Semiconductor Corp.
+# ----------------------------------------------------------------
+# 
+#   ***********       IMPORTANT RELEASE NOTES         ************
+# 
+#   You are using a version of the UVM library that has been compiled
+#   with `UVM_NO_DEPRECATED undefined.
+#   See http://www.eda.org/svdb/view.php?id=3313 for more details.
+# 
+#   You are using a version of the UVM library that has been compiled
+#   with `UVM_OBJECT_MUST_HAVE_CONSTRUCTOR undefined.
+#   See http://www.eda.org/svdb/view.php?id=3770 for more details.
+# 
+#       (Specify +UVM_NO_RELNOTES to turn off this notice)
+# 
+# UVM_WARNING @ 0: reporter [TPRGED] Type name 'master_rst_sequence' already registered with factory. No string-based lookup support for multiple types with the same type name.
+# UVM_INFO verilog_src/questa_uvm_pkg-1.2/src/questa_uvm_pkg.sv(277) @ 0: reporter [Questa UVM] QUESTA_UVM-1.2.3
+# UVM_INFO verilog_src/questa_uvm_pkg-1.2/src/questa_uvm_pkg.sv(278) @ 0: reporter [Questa UVM]  questa_uvm::init(all)
+# UVM_INFO @ 0: reporter [RNTST] Running test master_interrupts_test...
+# UVM_INFO ./tests/interrupt_test.sv(66) @ 0: uvm_test_top [run_phase] rst_seq stimulus generation started
+# **************************************************************************
+# * Questa UVM Transaction Recording Turned ON.                            *
+# * recording_detail has been set.                                         *
+# *  To turn off, set 'recording_detail' to off:                           *
+# * uvm_config_db#(int)            ::set(null, "", "recording_detail", 0); *
+# * uvm_config_db#(uvm_bitstream_t)::set(null, "", "recording_detail", 0); *
+# **************************************************************************
+# UVM_INFO ./tests/interrupt_test.sv(68) @ 10000: uvm_test_top [run_phase] rst_seq stimulus generation ended
+# UVM_INFO ./tests/interrupt_test.sv(70) @ 10000: uvm_test_top [run_phase] interrupts_seq stimulus generation started
+# ** Error: [WIDTH_ASSERT] W10: SCLK not at CPOL value during IDLE
+#    Time: 837 ns Started: 837 ns  Scope: top.DUT.master_assertions_inst.W10_sclk_idle_at_cpol_as File: ./assertions/master_assertions.sv Line: 224
+# ** Error: [WIDTH_ASSERT] W24: TX FIFO write pointer did not increment on push
+#    Time: 1373 ns Started: 1369 ns  Scope: top.DUT.master_assertions_inst.W24_tx_wp_increments_as File: ./assertions/master_assertions.sv Line: 405
+# ** Error: [WIDTH_ASSERT] W25: TX read pointer did not increment after tx_pop
+#    Time: 1377 ns Started: 1373 ns  Scope: top.DUT.master_assertions_inst.W25_tx_rp_increments_as File: ./assertions/master_assertions.sv Line: 420
+# UVM_INFO ./sequences/master_interrupts_sequance.sv(532) @ 1536000: uvm_test_top.env.agent.sqr@@interrupts_seq [master_interrupts_sequence] Starting W1C Race Test (TX_OVF) using fork and join
+# ** Error: [ASSERTION_ERROR] pwdata_stable_S_A test fail
+#    Time: 1603 ns Started: 1601 ns  Scope: top.DUT.u_dut.u_regfile.apb_sva_checker_inst.pwdata_stable_S_A_as File: ./assertions/apb_assertions.sv Line: 103
+# ** Error: [ASSERTION_ERROR] paddr_stable_S_A test fail
+#    Time: 1603 ns Started: 1601 ns  Scope: top.DUT.u_dut.u_regfile.apb_sva_checker_inst.paddr_stable_S_A_as File: ./assertions/apb_assertions.sv Line: 112
+# ** Error: [ASSERTION_ERROR] access_phase test fail
+#    Time: 1603 ns Started: 1601 ns  Scope: top.DUT.u_dut.u_regfile.apb_sva_checker_inst.access_phase_as File: ./assertions/apb_assertions.sv Line: 76
+# ** Error: [ASSERTION_ERROR] pwdata_stable_S_A test fail
+#    Time: 1605 ns Started: 1603 ns  Scope: top.DUT.u_dut.u_regfile.apb_sva_checker_inst.pwdata_stable_S_A_as File: ./assertions/apb_assertions.sv Line: 103
+# ** Error: [ASSERTION_ERROR] paddr_stable_S_A test fail
+#    Time: 1605 ns Started: 1603 ns  Scope: top.DUT.u_dut.u_regfile.apb_sva_checker_inst.paddr_stable_S_A_as File: ./assertions/apb_assertions.sv Line: 112
+# UVM_INFO ./tests/interrupt_test.sv(72) @ 1608000: uvm_test_top [run_phase] interrupts_seq stimulus generation ended
+# UVM_INFO verilog_src/uvm-1.1d/src/base/uvm_objection.svh(1267) @ 1608000: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
+# UVM_INFO ./env/apb_agent/apb_scoreboard.sv(106) @ 1608000: uvm_test_top.abp_env_inst.sb [report_phase] Correct_count =           0 , Error_count =           0
+# UVM_INFO ./env/master_agent/master_scoreboard.sv(38) @ 1608000: uvm_test_top.env.sb [report_phase] Correct_count =           0 , Error_count =           0
+# UVM_INFO ./env/spi_core_agent/spi_core_scoreboard.sv(100) @ 1608000: uvm_test_top.spi_core_env_inst.sb [report_phase] Correct_count =           0 , Error_count =           0
+# 
+# --- UVM Report Summary ---
+# 
+# ** Report counts by severity
+# UVM_INFO :   12
+# UVM_WARNING :    1
+# UVM_ERROR :    0
+# UVM_FATAL :    0
+# ** Report counts by id
+# [Questa UVM]     2
+# [RNTST]     1
+# [TEST_DONE]     1
+# [TPRGED]     1
+# [master_interrupts_sequence]     1
+# [report_phase]     3
+# [run_phase]     4
+# ** Note: $finish    : C:/questasim64_2021.1/win64/../verilog_src/uvm-1.1d/src/base/uvm_root.svh(430)
+#    Time: 1608 ns  Iteration: 61  Instance: /top
+# End time: 20:26:54 on May 21,2026, Elapsed time: 0:01:03
+# Errors: 8, Warnings: 1

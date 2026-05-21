@@ -393,7 +393,7 @@ package master_interrupts_sequence_pkg;
 
 
                 // ----------------------------------------------------------
-                // W1C RACE TEST (TRANSFER_DONE) - DETERMINISTIC VERSION
+                // W1C RACE TEST (TRANSFER_DONE) -
                 // ----------------------------------------------------------
                 begin
 
@@ -409,6 +409,7 @@ package master_interrupts_sequence_pkg;
                                 pwrite      == 1;
                                 pwdata[0]   == 1;        // EN
                                 pwdata[1]   == 1;        // MSTR
+                                pwdata[3:2] == 2'b00;    // CPOL=0, CPHA=0 (Mode 0)
                                 pwdata[7:6] == 2'b00;    // 8-bit
                             });
                         finish_item(seq_item);
@@ -465,6 +466,13 @@ package master_interrupts_sequence_pkg;
 
                     seq_item.TX_FULL_OVF_c.constraint_mode(0);
 
+                    // Wait for Step 3 transfer to finish completely so FIFO is empty
+                    repeat(40) begin
+                        start_item(seq_item);
+                            seq_item.psel = 0; seq_item.penable = 0;
+                        finish_item(seq_item);
+                    end
+
                     // =========================
                     // 4. WAIT EXACT TRANSFER TIME
                     // =========================
@@ -516,105 +524,9 @@ package master_interrupts_sequence_pkg;
 
                  
                 end
-/*
-                // ----------------------------------------------------------
-                // W1C RACE TEST (TX_OVF) using fork and join
-                // ----------------------------------------------------------
-                begin
-                    `uvm_info("master_interrupts_sequence", "Starting W1C Race Test (TX_OVF) using fork and join", UVM_LOW)
 
-                    // 1. DISABLE MASTER (cfg_mstr=0, cfg_en=1) to prevent draining FIFO
-                    seq_item.ctrl_mstr_off_c.constraint_mode(1);
-                    repeat(3) begin
-                        start_item(seq_item);
-                            assert(seq_item.randomize() with {
-                                presetn      == 1;
-                                pwrite       == 1;
-                                pwdata[7:6]  == 2'b00;   // 8-bit width
-                            }) else `uvm_fatal("RAND", "ctrl_mstr_off_c (W1C race setup) randomize failed");
-                        finish_item(seq_item);
-                    end
-                    seq_item.ctrl_mstr_off_c.constraint_mode(0);
+             
 
-                    // 2. FILL TX FIFO (8 writes to TX_DATA)
-                    repeat(8) begin
-                        repeat(3) begin
-                            seq_item.TX_FULL_OVF_c.constraint_mode(1);
-                            start_item(seq_item);
-                                assert (seq_item.randomize()) else `uvm_fatal("RAND", "TX FIFO fill failed");
-                            finish_item(seq_item);
-                            seq_item.TX_FULL_OVF_c.constraint_mode(0);
-                        end
-                    end
-
-                    // 3. ENABLE TX_OVF INTERRUPT in INT_EN (bit 2 = 32'h0000_0004)
-                    seq_item.int_EN_c.constraint_mode(1);
-                    repeat(3) begin
-                        start_item(seq_item);
-                            assert (seq_item.randomize() with { presetn == 1; pwdata == 32'h0000_0004; pwrite == 1; }) else `uvm_fatal("RAND", "int_EN setup failed");
-                        finish_item(seq_item);
-                    end
-                    seq_item.int_EN_c.constraint_mode(0);
-
-                    // 4. FORK/JOIN W1C RACE TEST
-                    //    Thread 1: Write to TX_DATA to cause TX Overflow (tx_push_dropped)
-                    //    Thread 2: Write W1C to INT_STAT to clear TX_OVF
-                    fork
-                        begin
-                            master_sequence_item seq_item_tx = master_sequence_item::type_id::create("seq_item_tx");
-                            seq_item_tx.constraint_mode(0);
-                            seq_item_tx.main_c.constraint_mode(1);
-                            seq_item_tx.TX_FULL_OVF_c.constraint_mode(1);
-                            repeat(3) begin
-                                start_item(seq_item_tx);
-                                    assert(seq_item_tx.randomize()) else `uvm_fatal("RAND", "TX OVF write failed");
-                                finish_item(seq_item_tx);
-                            end
-                        end
-                        begin
-                            master_sequence_item seq_item_clr = master_sequence_item::type_id::create("seq_item_clr");
-                            seq_item_clr.constraint_mode(0);
-                            seq_item_clr.main_c.constraint_mode(1);
-                            seq_item_clr.clr_STAT_c.constraint_mode(1);
-                            repeat(3) begin
-                                start_item(seq_item_clr);
-                                    assert(seq_item_clr.randomize() with { pwdata == 32'h0000_0004; presetn == 1; }) else `uvm_fatal("RAND", "W1C clear failed");
-                                finish_item(seq_item_clr);
-                            end
-                        end
-                    join
-
-                    // 5. READ STATUS AND INT_STAT TO VERIFY W1C RACE BEHAVIOR
-                    // According to W1C race, the bit MUST remain 1 because the event
-                    // asserts on the same PCLK cycle that W1C writes 1 to clear it.
-                    seq_item.status_read_c.constraint_mode(1);
-                    repeat(3) begin
-                        start_item(seq_item);
-                            assert (seq_item.randomize());
-                        finish_item(seq_item);
-                    end
-                    seq_item.status_read_c.constraint_mode(0);
-
-                    // Direct read of INT_STAT (address 8'h1C)
-                    repeat(3) begin
-                        start_item(seq_item);
-                            assert(seq_item.randomize() with { presetn == 1; paddr == 8'h1C; pwrite == 0; });
-                        finish_item(seq_item);
-                    end
-
-                    // 6. CLEAN UP (Clear the sticky TX_OVF interrupt so later tests are clean)
-                    seq_item.clr_STAT_c.constraint_mode(1);
-                    repeat(3) begin
-                        start_item(seq_item);
-                            assert(seq_item.randomize() with { presetn == 1; pwdata == 32'h0000_0004; pwrite == 1; }) else `uvm_fatal("RAND", "final TX_OVF clear failed");
-                        finish_item(seq_item);
-                    end
-                    seq_item.clr_STAT_c.constraint_mode(0);
-
-                    `uvm_info("master_interrupts_sequence", "Finished W1C Race Test (TX_OVF) using fork and join", UVM_LOW)
-                end
-
-*/
                             endtask
                             
                         endclass

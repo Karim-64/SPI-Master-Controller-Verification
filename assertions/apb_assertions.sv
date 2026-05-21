@@ -366,6 +366,68 @@ SS_asserted_before_TX_write_as:assert property(SS_asserted_before_TX_write)
 else $error("[ASSERTION_ERROR] SS_asserted_before_TX_write test fail");
 cover property(SS_asserted_before_TX_write);
 
+// ========================= W1C RACE CONDITION =========================
+wire [4:0] apb_read_int_stat = DUT.u_dut.u_regfile.int_stat;
+
+property w1c_race_transfer_done;
+    disable iff(~apbif.presetn)
+    @(posedge apbif.PCLK)
+
+    (
+        apbif.psel &&
+        apbif.penable &&
+        apbif.pwrite &&
+        apbif.paddr == 8'h1C &&
+        apbif.pwdata[4] &&
+        apbif.transfer_done_pulse
+    )
+    |=> ##0 (apb_read_int_stat[4] == 1'b1);
+endproperty
+
+w1c_race_transfer_done_as: assert property(w1c_race_transfer_done)
+else $error("[ASSERTION_ERROR] w1c_race_transfer_done test fail");
+cover property(w1c_race_transfer_done);
+
+property w1c_race_tx_ovf;
+    disable iff(~apbif.presetn)
+    @(posedge apbif.PCLK)
+
+    (
+        apbif.psel &&
+        apbif.penable &&
+        apbif.pwrite &&
+        apbif.paddr == 8'h1C &&
+        apbif.pwdata[2] &&
+        DUT.u_dut.u_regfile.tx_push_dropped
+    )
+    |=> ##0 (apb_read_int_stat[2] == 1'b1);
+endproperty
+
+w1c_race_tx_ovf_as: assert property(w1c_race_tx_ovf)
+else $error("[ASSERTION_ERROR] w1c_race_tx_ovf test fail");
+cover property(w1c_race_tx_ovf);
+
+// ======================== W1C CLEAR TEST (TX_OVF) ========================
+// Verifies that a W1C write to INT_STAT clears the TX_OVF bit when it's set
+property w1c_clear_tx_ovf;
+    disable iff(~apbif.presetn)
+    @(posedge apbif.PCLK)
+
+    (
+        apb_read_int_stat[2] &&                // TX_OVF is currently set
+        apbif.psel &&
+        apbif.penable &&
+        apbif.pwrite &&
+        apbif.paddr == 8'h1C &&
+        apbif.pwdata[2]                        // Clear TX_OVF bit (W1C)
+    )
+    |=> (apb_read_int_stat[2] == 1'b0);        // Should be cleared in the next cycle
+endproperty
+
+w1c_clear_tx_ovf_as: assert property(w1c_clear_tx_ovf)
+else $error("[ASSERTION_ERROR] w1c_clear_tx_ovf test fail");
+cover property(w1c_clear_tx_ovf);
+
 // ================================R20================================
 // check that slave control register updated correctly after each write operation
 property ss_n_correct;
