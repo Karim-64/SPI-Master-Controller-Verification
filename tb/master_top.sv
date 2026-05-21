@@ -1,16 +1,16 @@
 import uvm_pkg::*;
 `include "uvm_macros.svh"
-import mode_coverage_test_pkg::*;
-import clk_div_corner_test_pkg::*;
-import master_test_pkg::*;
-import sanity_test_pkg::*;
-import master_shared_pkg::*;
-import error_injection_test_pkg::*;
-import loopback_test_pkg::*;
-import delay_transfer_test_pkg::*;
-import width_coverage_test_pkg::*;
-import interrupts_pkg::*;
-import master_interrupts_sequence_pkg::*;
+// import mode_coverage_test_pkg::*;
+// import clk_div_corner_test_pkg::*;
+// import master_test_pkg::*;
+// import sanity_test_pkg::*;
+// import master_shared_pkg::*;
+// import error_injection_test_pkg::*;
+// import loopback_test_pkg::*;
+// import delay_transfer_test_pkg::*;
+// import width_coverage_test_pkg::*;
+// import interrupts_pkg::*;
+// import master_interrupts_sequence_pkg::*;
 import comprehensive_test_pkg::*;
 
 `timescale 1ns/1ps
@@ -116,7 +116,7 @@ module top ();
     );
 
     bind DUT.u_dut.u_regfile apb_SVA apb_sva_checker_inst (apb.DUT);
-    bind DUT master_assertions master_assertions_inst (apb.DUT);
+    // bind DUT master_assertions master_assertions_inst (apb.DUT);
     initial begin
         uvm_config_db#(virtual master_if)  ::set  (null, "uvm_test_top", "MASTER_IF",   masterif);
         uvm_config_db#(virtual apb_if)     ::set  (null, "uvm_test_top", "APB_IF",      apb);

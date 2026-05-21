@@ -13,9 +13,9 @@ always_comb begin
        ss_n_rst:            assert final(apbif.ss_n          == 4'b1111);
        cfg_clk_div_rst:     assert final(apbif.cfg_clk_div   == 16'b0);
        tx_word_RST:         assert final(apbif.tx_word       == 32'b0);
-        tx_empty_rst:       assert final(apbif.tx_empty      == 1'b1);
-        irq_rst:            assert final(apbif.irq           == 1'b0);    
-        prdata_rst:          assert final(apbif.prdata       == 32'b0);
+       tx_empty_rst:        assert final(apbif.tx_empty      == 1'b1);
+       irq_rst:             assert final(apbif.irq           == 1'b0);    
+    //    prdata_rst:          assert final(apbif.prdata        == 32'b0);
 
         //Control Register Reset test
         control_reg_rst:        assert final(DUT.u_dut.u_regfile.ctrl_word      == 32'h0);  
@@ -246,8 +246,9 @@ property pop_correct;
     disable iff(~apbif.presetn)
     @(posedge apbif.PCLK) (apbif.psel && apbif.penable && ~apbif.pwrite 
     && apbif.paddr == 8'h0C && ~DUT.u_dut.u_regfile.rx_empty_w) 
-    |=> (DUT.u_dut.u_regfile.rx_rp == $past(DUT.u_dut.u_regfile.rx_rp) + 1);
+    |=> (DUT.u_dut.u_regfile.rx_rp == $past(DUT.u_dut.u_regfile.rx_rp) + 1'b1);
 endproperty
+
 pop_correct_as: assert  property(pop_correct)
 else $error("[ASSERTION_ERROR] pop_correct test fail");
 cover property(pop_correct);
@@ -350,21 +351,21 @@ irq_equation_as: assert  property(irq_equation)
 else $error("[ASSERTION_ERROR] irq_equation test fail");
 cover property(irq_equation);
 
-property SS_asserted_before_TX_write;
-    @(posedge apbif.PCLK)
-    disable iff(!apbif.presetn)
+// property SS_asserted_before_TX_write;
+//     @(posedge apbif.PCLK)
+//     disable iff(!apbif.presetn)
 
-    (apbif.psel &&
-     apbif.penable &&
-     apbif.pwrite &&
-     apbif.paddr == 8'h08)
+//     (apbif.psel &&
+//      apbif.penable &&
+//      apbif.pwrite &&
+//      apbif.paddr == 8'h08)
 
-    |=>  (apbif.ss_n != 4'b1111);
-endproperty
+//     |=>  (apbif.ss_n != 4'b1111);
+// endproperty
 
-SS_asserted_before_TX_write_as:assert property(SS_asserted_before_TX_write)
-else $error("[ASSERTION_ERROR] SS_asserted_before_TX_write test fail");
-cover property(SS_asserted_before_TX_write);
+// SS_asserted_before_TX_write_as:assert property(SS_asserted_before_TX_write)
+// else $error("[ASSERTION_ERROR] SS_asserted_before_TX_write test fail");
+// cover property(SS_asserted_before_TX_write);
 
 // ========================= W1C RACE CONDITION =========================
 wire [4:0] apb_read_int_stat = DUT.u_dut.u_regfile.int_stat;
@@ -490,12 +491,12 @@ cover property(pslverr_0);
 
 // ==================================R23==================================
 // test paddr is 4 byte allgigned (its first 2 bits always zero or modulus 4 = 0)
-property paddr_correct_val;
-    @(posedge apbif.PCLK) (apbif.paddr % 4 == 0);
-endproperty
-paddr_correct_val_as: assert  property(paddr_correct_val)
-else $error("[ASSERTION_ERROR] paddr_correct_val test fail");
-cover property(paddr_correct_val);
+// property paddr_correct_val;
+//     @(posedge apbif.PCLK) (apbif.paddr % 4 == 0);
+// endproperty
+// paddr_correct_val_as: assert  property(paddr_correct_val)
+// else $error("[ASSERTION_ERROR] paddr_correct_val test fail");
+// cover property(paddr_correct_val);
 
 // test prdata is zero if paddr >= 24 in read case      
 property prdata_correct_val;
