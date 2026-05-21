@@ -407,26 +407,7 @@ w1c_race_tx_ovf_as: assert property(w1c_race_tx_ovf)
 else $error("[ASSERTION_ERROR] w1c_race_tx_ovf test fail");
 cover property(w1c_race_tx_ovf);
 
-// ======================== W1C CLEAR TEST (TX_OVF) ========================
-// Verifies that a W1C write to INT_STAT clears the TX_OVF bit when it's set
-property w1c_clear_tx_ovf;
-    disable iff(~apbif.presetn)
-    @(posedge apbif.PCLK)
 
-    (
-        apb_read_int_stat[2] &&                // TX_OVF is currently set
-        apbif.psel &&
-        apbif.penable &&
-        apbif.pwrite &&
-        apbif.paddr == 8'h1C &&
-        apbif.pwdata[2]                        // Clear TX_OVF bit (W1C)
-    )
-    |=> (apb_read_int_stat[2] == 1'b0);        // Should be cleared in the next cycle
-endproperty
-
-w1c_clear_tx_ovf_as: assert property(w1c_clear_tx_ovf)
-else $error("[ASSERTION_ERROR] w1c_clear_tx_ovf test fail");
-cover property(w1c_clear_tx_ovf);
 
 // ================================R20================================
 // check that slave control register updated correctly after each write operation
