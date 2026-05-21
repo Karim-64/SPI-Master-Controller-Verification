@@ -157,6 +157,7 @@ eval vlog $VLOG_OPTS "$SEQ/error_injection_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/delay_transfer_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/loopback_sequence.sv"
 eval vlog $VLOG_OPTS "$SEQ/div_sequence.sv"
+eval vlog $VLOG_OPTS "$SEQ/width_coverage_sequance.sv"
 
 # ------------------------------------------------------------
 # 13. Compile Tests
