@@ -3,23 +3,6 @@ package master_fifo_stress_sequence_pkg;
     import master_sequence_item_pkg::*;
     `include "uvm_macros.svh"
 
-    class master_rst_sequence extends uvm_sequence #(master_sequence_item);
-        `uvm_object_utils(master_rst_sequence)
-        master_sequence_item req;
-
-        function new(string name = "master_rst_sequence");
-            super.new(name);
-        endfunction
-
-        task body();
-            req = master_sequence_item::type_id::create("req");
-            repeat(5) begin
-                start_item(req);
-                    req.presetn = 0;
-                finish_item(req);
-            end
-        endtask
-    endclass
 
     class fifo_stress_sequence extends uvm_sequence #(master_sequence_item);
         `uvm_object_utils(fifo_stress_sequence)
