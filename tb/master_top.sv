@@ -113,13 +113,43 @@ module top ();
     miso_data_pkg    // 32-bit pattern repeatedly returned on MISO
     );
 
+    apb_regfile_golden abp_gm (
+        .PCLK(PCLK),
+        .PRESETn(masterif.presetn),
+        .PSEL(apb.psel),
+        .PENABLE(apb.penable),
+        .PWRITE(apb.pwrite),
+        .PADDR(apb.paddr),
+        .PWDATA(apb.pwdata),
+        .PRDATA(apb.prdata_exp),
+        .PREADY(apb.pready_exp),
+        .PSLVERR(apb.pslverr_exp),
+        .cfg_en(apb.cfg_en_exp),
+        .cfg_mstr(apb.cfg_mstr_exp),
+        .cfg_mode(apb.cfg_mode_exp),
+        .cfg_lsb_first(apb.cfg_lsb_first_exp),
+        .cfg_loopback(apb.cfg_loopback_exp),
+        .cfg_width(apb.cfg_width_exp),
+        .cfg_clk_div(apb.cfg_clk_div_exp),
+        .cfg_delay(apb.cfg_delay_exp),
+        .SS_n(apb.ss_n_exp),
+        .tx_word(apb.tx_word_exp),
+        .tx_empty(apb.tx_empty_exp),
+        .tx_pop(apb.tx_pop),
+        .rx_push_valid(apb.rx_push_valid),
+        .rx_push_data(apb.rx_push_data),
+        .busy_in(apb.busy_in),
+        .transfer_done_pulse(apb.transfer_done_pulse),
+        .IRQ(apb.irq_exp)
+    );
+
     bind DUT.u_dut.u_regfile apb_SVA apb_sva_checker_inst (apb.DUT);
     bind DUT master_assertions master_assertions_inst (apb.DUT);
     initial begin
         uvm_config_db#(virtual master_if)  ::set  (null, "uvm_test_top", "MASTER_IF",   masterif);
         uvm_config_db#(virtual apb_if)     ::set  (null, "uvm_test_top", "APB_IF",      apb);
         uvm_config_db#(virtual spi_if)     ::set(null, "uvm_test_top", "spi_core_IF",   spi);
-         run_test("master_access_test");
+        run_test("master_access_test");
         // run_test("mode_coverage_test");
         // run_test("error_injection_test");
         // run_test("clk_div_corner_test");
