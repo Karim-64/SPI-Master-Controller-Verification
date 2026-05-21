@@ -53,6 +53,9 @@ import master_fifo_stress_sequence_pkg::*;
 
 // --- Width Coverage Test Sequences ---
 import width_coverage_sequence_pkg::*;
+import master_interrupts_sequence_pkg ::*;
+
+import interrupts_pkg::*;
 
 
 //=============================================================================
@@ -79,11 +82,20 @@ class comprehensive_test extends uvm_test;
     spi_core_config     spi_core_object_inst;
 
     virtual master_if   master_vif;
+<<<<<<< HEAD
+=======
+    virtual apb_if apb_vif;
+>>>>>>> c10248cb0797c7641555da4ab2cb7ab0a882e939
 
     // =========================================================================
     // SEQUENCES FROM ACCESS_REG_TEST (master_access_test sequences)
     // =========================================================================
+<<<<<<< HEAD
     master_sequence_pkg::master_rst_sequence                 access_rst_seq;
+=======
+    //master_rst_sequence                 access_rst_seq;
+    master_sequence_pkg::master_rst_sequence access_rst_seq;
+>>>>>>> c10248cb0797c7641555da4ab2cb7ab0a882e939
     master_Write_read_sequence          access_write_read_sequence;
     master_ctrl_sequence                access_ctrl_seq;
     master_CLK_DIV_sequence             access_clk_div_seq;
@@ -91,6 +103,11 @@ class comprehensive_test extends uvm_test;
     master_ss_ctrl_sequence             access_ss_ctrl_seq;
     master_status_sequence              access_status_seq;
     master_violate_write_read_sequance  access_violate_write_read_seq;
+<<<<<<< HEAD
+=======
+    //master_interrupts_sequence interrupts_seq;
+
+>>>>>>> c10248cb0797c7641555da4ab2cb7ab0a882e939
 
     // =========================================================================
     // SEQUENCES FROM SANITY_TEST
@@ -133,7 +150,12 @@ class comprehensive_test extends uvm_test;
     // =========================================================================
     // SEQUENCES FROM FIFO_STRESS_TEST
     // =========================================================================
+<<<<<<< HEAD
     master_fifo_stress_sequence_pkg::master_rst_sequence         fifo_stress_rst_seq;
+=======
+    //master_rst_sequence         fifo_stress_rst_seq;
+    master_sequence_pkg::master_rst_sequence fifo_stress_rst_seq;
+>>>>>>> c10248cb0797c7641555da4ab2cb7ab0a882e939
     fifo_stress_sequence        fifo_stress_seq;
 
     // =========================================================================
@@ -229,7 +251,11 @@ class comprehensive_test extends uvm_test;
         // ===================================================================
         // CREATE SEQUENCES FROM FIFO_STRESS_TEST
         // ===================================================================
+<<<<<<< HEAD
         fifo_stress_rst_seq = master_fifo_stress_sequence_pkg::master_rst_sequence::type_id::create("fifo_stress_rst_seq");
+=======
+        fifo_stress_rst_seq = master_sequence_pkg::master_rst_sequence::type_id::create("fifo_stress_rst_seq");
+>>>>>>> c10248cb0797c7641555da4ab2cb7ab0a882e939
         fifo_stress_seq     = fifo_stress_sequence::type_id::create("fifo_stress_seq");
 
         // ===================================================================
@@ -470,6 +496,18 @@ class comprehensive_test extends uvm_test;
         `uvm_info("run_phase", "=== PHASE: All widths x all SPI modes ===", UVM_LOW)
         width_all_modes_seq.start(env.agent.sqr);
 
+<<<<<<< HEAD
+=======
+        //         `uvm_info("run_phase","rst_seq stimulus generation started",UVM_LOW)
+        //     rst_seq.start(env.agent.sqr);
+        // `uvm_info("run_phase","rst_seq stimulus generation ended",UVM_LOW)
+
+        //     `uvm_info("run_phase","interrupts_seq stimulus generation started",UVM_LOW)
+        //           interrupts_seq.start(env.agent.sqr);
+        // `uvm_info("run_phase","interrupts_seq stimulus generation ended",UVM_LOW)
+
+
+>>>>>>> c10248cb0797c7641555da4ab2cb7ab0a882e939
         // ===================================================================
         // END OF ALL SEQUENCES
         // ===================================================================
