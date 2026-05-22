@@ -1,17 +1,8 @@
 import uvm_pkg::*;
 `include "uvm_macros.svh"
-// import mode_coverage_test_pkg::*;
-// import clk_div_corner_test_pkg::*;
-// import master_test_pkg::*;
-// import sanity_test_pkg::*;
-// import master_shared_pkg::*;
-// import error_injection_test_pkg::*;
-// import loopback_test_pkg::*;
-// import delay_transfer_test_pkg::*;
-// import width_coverage_test_pkg::*;
-// import interrupts_pkg::*;
-// import master_interrupts_sequence_pkg::*;
 import comprehensive_test_pkg::*;
+import master_shared_pkg::*;
+import ral_hw_reset_test_pkg::*;
 
 `timescale 1ns/1ps
 module top ();
@@ -106,28 +97,103 @@ module top ();
     assign spi.tx_empty             = DUT.u_dut.tx_empty;
     assign spi.ss_n                 = DUT.u_dut.ss_n_int;
 
-    assign masterif.miso=spi.miso;
+    //=========================================================================
+    // SPI Slave BFM — configuration driven by master_shared_pkg variables
+    // Sequences write master_shared_pkg::mode_pkg etc. directly.
+    //=========================================================================
+    assign masterif.miso = spi.miso;
     spi_slave_bfm slave_bfm(
-    spi,              
-    mode_pkg,        // {CPOL, CPHA} - from CTRL[3:2]
-    lsb_first_pkg,   // 1 = LSB-first, 0 = MSB-first - from CTRL[4]
-    width_cfg_pkg,   // 00=8b, 01=16b, 10=32b - from CTRL[7:6]
-    miso_data_pkg    // 32-bit pattern repeatedly returned on MISO
+        .spi        (spi),
+        .mode       (mode_pkg),
+        .lsb_first  (lsb_first_pkg),
+        .width_cfg  (width_cfg_pkg),
+        .miso_data  (miso_data_pkg)
     );
 
-    bind DUT.u_dut.u_regfile apb_SVA     apb_sva_checker_inst (apb.DUT);
-    bind DUT.u_dut.u_core    spi_coreSVA spi_sva_checker_inst (spi.DUT);
-    // bind DUT master_assertions master_assertions_inst (apb.DUT);
+    apb_regfile_golden abp_gm (
+        .PCLK(PCLK),
+        .PRESETn(masterif.presetn),
+        .PSEL(apb.psel),
+        .PENABLE(apb.penable),
+        .PWRITE(apb.pwrite),
+        .PADDR(apb.paddr),
+        .PWDATA(apb.pwdata),
+        .PRDATA(apb.prdata_exp),
+        .PREADY(apb.pready_exp),
+        .PSLVERR(apb.pslverr_exp),
+        .cfg_en(apb.cfg_en_exp),
+        .cfg_mstr(apb.cfg_mstr_exp),
+        .cfg_mode(apb.cfg_mode_exp),
+        .cfg_lsb_first(apb.cfg_lsb_first_exp),
+        .cfg_loopback(apb.cfg_loopback_exp),
+        .cfg_width(apb.cfg_width_exp),
+        .cfg_clk_div(apb.cfg_clk_div_exp),
+        .cfg_delay(apb.cfg_delay_exp),
+        .SS_n(apb.ss_n_exp),
+        .tx_word(apb.tx_word_exp),
+        .tx_empty(apb.tx_empty_exp),
+        .tx_pop(apb.tx_pop),
+        .rx_push_valid(apb.rx_push_valid),
+        .rx_push_data(apb.rx_push_data),
+        .busy_in(apb.busy_in),
+        .transfer_done_pulse(apb.transfer_done_pulse),
+        .IRQ(apb.irq_exp)
+    );
+
+    // ============================================================
+    // SPI Core Reference Model — drives _expected signals in spi_if
+    // ============================================================
+    spi_core_golden spi_gm (
+        .PCLK(PCLK),
+        .PRESETn(masterif.presetn),
+        .cfg_en(apb.cfg_en_exp),
+        .cfg_mstr(apb.cfg_mstr_exp),
+        .cfg_mode(apb.cfg_mode_exp),
+        .cfg_lsb_first(apb.cfg_lsb_first_exp),
+        .cfg_loopback(apb.cfg_loopback_exp),
+        .cfg_width(apb.cfg_width_exp),
+        .cfg_clk_div(apb.cfg_clk_div_exp),
+        .cfg_delay(apb.cfg_delay_exp),
+        .ss_n_drive(apb.ss_n_exp),
+        .tx_word(apb.tx_word_exp),
+        .tx_empty(apb.tx_empty_exp),
+        .tx_pop(spi.tx_pop_expected),  // predicted value from golden model
+        .rx_push_valid(spi.rx_push_valid_expected),  // predicted value from golden model
+        .rx_push_data(spi.rx_push_data_expected),  // predicted value from golden model
+        .busy(spi.busy_expected),  // predicted value from golden model
+        .transfer_done_pulse(spi.transfer_done_pulse_expected),  // predicted value from golden model
+        .SCLK(spi.sclk_expected),  // predicted value from golden model
+        .MOSI(spi.mosi_expected),   // predicted value from golden model
+        .MISO(masterif.miso)
+    );
+
+    // ============================================================
+    spi_master_golden spi_golden (
+        .PCLK(PCLK),
+        .PRESETn(masterif.presetn),
+        .PSEL(masterif.psel),
+        .PENABLE(masterif.penable),
+        .PWRITE(masterif.pwrite),
+        .PADDR(masterif.paddr),
+        .PWDATA(masterif.pwdata),
+        .MISO(masterif.miso),
+        .PRDATA(masterif.prdata_exp),
+        .PREADY(masterif.pready_exp),
+        .PSLVERR(masterif.pslverr_exp),
+        .SCLK(masterif.sclk_exp),
+        .MOSI(masterif.mosi_exp),
+        .SS_n(masterif.ss_n_exp),
+        .IRQ(masterif.irq_exp)
+    );
+
+
+    
+    bind DUT.u_dut.u_regfile apb_SVA  apb_sva_checker_inst   (apb.DUT);
+    bind DUT.u_dut.u_core spi_coreSVA spi_sva_assertions_inst (spi.DUT);
     initial begin
         uvm_config_db#(virtual master_if)  ::set  (null, "uvm_test_top", "MASTER_IF",   masterif);
         uvm_config_db#(virtual apb_if)     ::set  (null, "uvm_test_top", "APB_IF",      apb);
         uvm_config_db#(virtual spi_if)     ::set(null, "uvm_test_top", "spi_core_IF",   spi);
-        // run_test("master_access_test");
-        //run_test("mode_coverage_test");
-        //run_test("error_injection_test");
-        // run_test("clk_div_corner_test");
-        // run_test("sanity_test");
-        // run_test("width_coverage_test");
         run_test("comprehensive_test");
     end
 endmodule

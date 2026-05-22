@@ -1,14 +1,6 @@
 # vsim -c work.top "+UVM_TESTNAME=comprehensive_test" -sv_seed 1 -coverage -do "coverage save -onexit build/cov_comprehensive_test_1.ucdb; run -all; quit" -l build/log_comprehensive_test_1.log 
-# Start time: 00:45:21 on May 22,2026
-# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
-# ** Warning: tb/master_top.sv(110): (vopt-2241) Connection width does not match width of port 'mode'. The port definition is at: tb/spi_slave_bfm.sv(6).
-# ** Warning: tb/master_top.sv(110): (vopt-2241) Connection width does not match width of port 'width_cfg'. The port definition is at: tb/spi_slave_bfm.sv(8).
-# ** Warning: tb/master_top.sv(110): (vopt-2241) Connection width does not match width of port 'miso_data'. The port definition is at: tb/spi_slave_bfm.sv(9).
-# ** Warning: tb/master_top.sv(112): (vopt-2958) Implicit wire 'mode_pkg' does not have any driver.
-# ** Warning: tb/master_top.sv(113): (vopt-2958) Implicit wire 'lsb_first_pkg' does not have any driver.
-# ** Warning: tb/master_top.sv(114): (vopt-2958) Implicit wire 'width_cfg_pkg' does not have any driver.
-# ** Warning: tb/master_top.sv(115): (vopt-2958) Implicit wire 'miso_data_pkg' does not have any driver.
-# ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=0, Warnings=7.
+# Start time: 04:51:04 on May 22,2026
+# ** Note: (vsim-8009) Loading existing optimized design _opt3
 # //  Questa Sim-64
 # //  Version 2021.1 win64 Jan 19 2021
 # //
@@ -24,11 +16,12 @@
 # //  18 U.S.C. Section 1905.
 # //
 # Loading sv_std.std
+# Loading mtiUvm.uvm_pkg(fast)
+# Loading work.ral_hw_reset_test_pkg(fast)
 # Loading work.master_if(fast)
 # Loading work.apb_if(fast)
 # Loading work.spi_if(fast)
 # Loading work.master_shared_pkg(fast)
-# Loading mtiUvm.uvm_pkg(fast)
 # Loading work.master_sequence_item_pkg(fast)
 # Loading work.master_interrupts_sequence_pkg(fast)
 # Loading work.width_coverage_sequence_pkg(fast)
@@ -74,13 +67,8 @@
 # Loading work.top(fast)
 # Loading work.spi_master(fast)
 # Loading work.apb_SVA(fast)
+# Loading work.spi_coreSVA(fast)
 # Loading work.spi_slave_bfm(fast)
-# ** Warning: (vsim-3015) [PCDPC] - Port size (2) does not match connection size (1) for port 'mode'. The port definition is at: tb/spi_slave_bfm.sv(6).
-#    Time: 0 ps  Iteration: 0  Instance: /top/slave_bfm File: tb/master_top.sv Line: 110
-# ** Warning: (vsim-3015) [PCDPC] - Port size (2) does not match connection size (1) for port 'width_cfg'. The port definition is at: tb/spi_slave_bfm.sv(8).
-#    Time: 0 ps  Iteration: 0  Instance: /top/slave_bfm File: tb/master_top.sv Line: 110
-# ** Warning: (vsim-3015) [PCDPC] - Port size (32) does not match connection size (1) for port 'miso_data'. The port definition is at: tb/spi_slave_bfm.sv(9).
-#    Time: 0 ps  Iteration: 0  Instance: /top/slave_bfm File: tb/master_top.sv Line: 110
 # Loading C:/questasim64_2021.1/uvm-1.1d\win64\uvm_dpi.dll
 # coverage save -onexit build/cov_comprehensive_test_1.ucdb
 #  run -all
@@ -199,9 +187,9 @@
 # UVM_INFO tests/comprehensive_test.sv(505) @ 509056000: uvm_test_top [run_phase] ALL SEQUENCES COMPLETED SUCCESSFULLY
 # UVM_INFO tests/comprehensive_test.sv(506) @ 509056000: uvm_test_top [run_phase] ========================================
 # UVM_INFO verilog_src/uvm-1.1d/src/base/uvm_objection.svh(1267) @ 509056000: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
-# UVM_INFO env/apb_agent/apb_scoreboard.sv(106) @ 509056000: uvm_test_top.abp_env_inst.sb [report_phase] Correct_count =           0 , Error_count =           0
-# UVM_INFO env/master_agent/master_scoreboard.sv(38) @ 509056000: uvm_test_top.env.sb [report_phase] Correct_count =           0 , Error_count =           0
-# UVM_INFO env/spi_core_agent/spi_core_scoreboard.sv(100) @ 509056000: uvm_test_top.spi_core_env_inst.sb [report_phase] Correct_count =           0 , Error_count =           0
+# UVM_INFO env/apb_agent/apb_scoreboard.sv(106) @ 509056000: uvm_test_top.abp_env_inst.sb [report_phase] Correct_count =      254528 , Error_count =           0
+# UVM_INFO env/master_agent/master_scoreboard.sv(81) @ 509056000: uvm_test_top.env.sb [report_phase] Correct_count =      254528 , Error_count =           0
+# UVM_INFO env/spi_core_agent/spi_core_scoreboard.sv(81) @ 509056000: uvm_test_top.spi_core_env_inst.sb [report_phase] Correct_count =      254528 , Error_count =           0
 # 
 # --- UVM Report Summary ---
 # 
@@ -219,5 +207,5 @@
 # ** Note: $finish    : C:/questasim64_2021.1/win64/../verilog_src/uvm-1.1d/src/base/uvm_root.svh(430)
 #    Time: 509056 ns  Iteration: 61  Instance: /top
 # Saving coverage database on exit...
-# End time: 00:46:32 on May 22,2026, Elapsed time: 0:01:11
-# Errors: 0, Warnings: 10
+# End time: 04:51:46 on May 22,2026, Elapsed time: 0:00:42
+# Errors: 0, Warnings: 0

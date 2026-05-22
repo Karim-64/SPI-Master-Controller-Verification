@@ -86,8 +86,23 @@ add wave -noupdate -group SPI_GROUP /top/spi/transfer_done_pulse_expected
 add wave -noupdate -group SPI_GROUP /top/spi/sclk_expected
 add wave -noupdate -group SPI_GROUP /top/spi/mosi_expected
 add wave -noupdate -group SPI_GROUP /top/spi/rx_push_data_expected
+add wave -noupdate -expand -group BFM /top/slave_bfm/mode
+add wave -noupdate -expand -group BFM /top/slave_bfm/lsb_first
+add wave -noupdate -expand -group BFM /top/slave_bfm/width_cfg
+add wave -noupdate -expand -group BFM /top/slave_bfm/miso_data
+add wave -noupdate -expand -group BFM /top/slave_bfm/sclk_q
+add wave -noupdate -expand -group BFM /top/slave_bfm/bit_idx
+add wave -noupdate -expand -group BFM /top/slave_bfm/first_edge_done
+add wave -noupdate -expand -group BFM /top/slave_bfm/cpol
+add wave -noupdate -expand -group BFM /top/slave_bfm/cpha
+add wave -noupdate -expand -group BFM /top/slave_bfm/ss_act
+add wave -noupdate -expand -group BFM /top/slave_bfm/actual_width
+add wave -noupdate -expand -group BFM /top/slave_bfm/start_bit
+add wave -noupdate -expand -group BFM /top/slave_bfm/sclk_rise
+add wave -noupdate -expand -group BFM /top/slave_bfm/sclk_fall
+add wave -noupdate -expand -group BFM /top/slave_bfm/launch_edge
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {34070797 ps} 0}
+WaveRestoreCursors {{Cursor 1} {81128000 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 371
 configure wave -valuecolwidth 100
@@ -103,4 +118,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {33938906 ps} {34417952 ps}
+WaveRestoreZoom {81833427 ps} {207785623 ps}

@@ -8,6 +8,7 @@ SEED             ?= 1
 WAVES            ?= 0
 REGRESSION_TESTS ?= comprehensive_test
 REGRESSION_SEEDS ?= 1
+BONUS_TEST       ?= ral_hw_reset_test
 
 # Default DUT sources 
 DUT_SRCS         ?= golden_rtl/spi_core.sv golden_rtl/apb_regfile.sv golden_rtl/spi_master.sv 
@@ -38,17 +39,22 @@ compile:
 	
 	@echo "=> Compiling Interfaces & BFM..."
 	vlog -sv harness/apb_if.sv harness/master_if.sv harness/spi_if.sv
-	vlog -sv tb/spi_slave_bfm.sv 
+	vlog -sv tb/spi_slave_bfm.sv
+	vlog -sv harness/dut_wrapper.sv
 	
 	@echo "=> Compiling DUT..."
 	vlog -sv +cover $(DUT_SRCS)
+	
+	@echo "=> Compiling Golden / Reference Models..."
+	vlog -sv tb/apb_regfile_golden.sv tb/spi_core_golden.sv tb/spi_master_golden.sv
 	
 	@echo "=> Compiling Sequences..."
 	vlog -sv sequences/apb_sequence_item.sv sequences/master_sequence_item.sv sequences/spi_core_sequence_item.sv
 	vlog -sv sequences/master_sequence.sv sequences/sanity_sequence.sv \
 	         sequences/modes_sequence.sv sequences/div_sequence.sv sequences/error_injection_sequence.sv \
 	         sequences/master_fifo_stress_sequance.sv \
-	         sequences/delay_transfer_sequence.sv sequences/loopback_sequence.sv sequences/width_coverage_sequance.sv
+	         sequences/delay_transfer_sequence.sv sequences/loopback_sequence.sv sequences/width_coverage_sequance.sv \
+	         sequences/master_interrupts_sequance.sv
 	
 	@echo "=> Compiling Environment..."
 	vlog -sv env/apb_agent/apb_config.sv env/apb_agent/apb_sequencer.sv env/apb_agent/apb_driver.sv env/apb_agent/apb_monitor.sv env/apb_agent/apb_coverage.sv env/apb_agent/apb_scoreboard.sv env/apb_agent/apb_agent.sv
@@ -58,7 +64,7 @@ compile:
 	
 	@echo "=> Compiling Assertions & Tests..."
 	vlog -sv assertions/apb_assertions.sv assertions/spi_core_assertions.sv assertions/master_assertions.sv
-	vlog -sv tests/comprehensive_test.sv 
+	vlog -sv tests/comprehensive_test.sv tests/ral_hw_reset_test.sv
 	vlog -sv tb/master_top.sv
 
 # ==============================================================================
@@ -75,14 +81,16 @@ run:
 # ==============================================================================
 regress:
 	@echo "=> Starting Regression..."
-	@mkdir -p build
-	@for t in $(REGRESSION_TESTS); do \
-		for s in `seq 1 $(REGRESSION_SEEDS)`; do \
-			echo "   Running $$t | SEED=$$s..."; \
-			vsim -c work.top +UVM_TESTNAME=$$t -sv_seed $$s -coverage -do "coverage save -onexit build/cov_$${t}_$${s}.ucdb; run -all; quit" -l build/log_$${t}_$${s}.log; \
-		done \
-	done
-	@echo "=> Regression Complete!"
+	@if not exist build mkdir build
+	powershell -ExecutionPolicy Bypass -File make.ps1 regress -RegressionTests "$(REGRESSION_TESTS)" -RegressionSeeds $(REGRESSION_SEEDS) -DutSrcs "$(DUT_SRCS)"
+
+# ==============================================================================
+# Target: run_bonus
+# Runs the mandatory RAL bonus test (or the skipped stub)
+# ==============================================================================
+run_bonus:
+	@echo "=> Running RAL Bonus Test..."
+	$(MAKE) run TEST=$(BONUS_TEST) SEED=1
 
 # ==============================================================================
 # Target: cov
