@@ -11,8 +11,8 @@ A full UVM-based verification environment for an APB-slave SPI Master Controller
 
 ## Team
 
-| Name | ID |
-|---|---|
+| Name | 
+|---|
 | Karim Maaty | 
 | Mohamed Lotfy |
 | Rawan Waziry | 
