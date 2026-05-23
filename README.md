@@ -180,11 +180,3 @@ The grader recognises the following lines:
 |---|---|
 | Functional Coverage | **98%** |
 | Code Coverage (stmt/branch) | **≥85%** |
-
----
-
-## Notes
-
-- `golden_rtl/` is for **local development only** — the grader injects its own DUT via `DUT_SRCS`
-- Do not submit `work/`, `*.wlf`, or any binary simulator output
-- `tests/ral_hw_reset_test.sv` is a stub that prints `[TEST_SKIPPED] ral_hw_reset_test` — RAL bonus not attempted
