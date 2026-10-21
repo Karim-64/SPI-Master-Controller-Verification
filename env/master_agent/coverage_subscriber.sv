@@ -131,6 +131,5 @@ package coverage_subscriber_pkg;
         cg_apb_silent_failures.sample();
         cg_disabled_ops.sample();
     endfunction
-    
     endclass 
 endpackage

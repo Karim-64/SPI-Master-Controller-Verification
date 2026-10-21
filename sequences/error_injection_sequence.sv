@@ -22,7 +22,7 @@ package error_enjection_sequence_pkg;
                     seq_item.penable = 1'b0;
                     seq_item.pwrite  = 1'b0;
                     seq_item.paddr   = 8'b0;
-                    seq_item.pwdata  = 32'b0;
+                    seq_item.pwdata  = 32'b0;ko
                     seq_item.miso    = 1'b0;
                 finish_item(seq_item);
             end
